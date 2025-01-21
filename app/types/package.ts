@@ -4,4 +4,5 @@ export interface Package {
     title: string;
     price: string;
     details: string;
+    description: string;
 }

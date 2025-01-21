@@ -22,46 +22,57 @@ const packages: Package[] = [
 
             Fruits:
                 Fruit in season`,
-        imageUrl: undefined
+        imageUrl: undefined,
+        description: 'Basic Meal Package',
     },
     {
         id: 2,
         title: "Silver",
         price: "KES 700",
         details: `Starch:\n Pilau\n Rice garnished with vegetables\n Chapati\n A choice of Mukimo, Mashed Potatoes or Parsley Potatoes\n\nProtein:\n Beef Stew\n Chicken\n\nVegetables:\n Vegetable Salad or Cooked Vegetables\n\nDesert:\n Fruit in season`,
-        imageUrl: undefined
+        imageUrl: undefined,
+        description: 'Silver Meal Package',
     },
     {
         id: 3,
         title: "Gold",
         price: "KES 1200",
         details: `Starch:\n Swahili Rice\n Vegetable stir-fried Rice\n White and brown Chapati\n Extra Starch Option\n\nProteins:\n Beef stew\n Chicken\n Goat fry, Pork, or Fish\n\nVegetables:\n Stir Fried Vegetables\n\nDesert:\n Fruit Cuts\n\nDrinks:\n Soda\n Water`,
-        imageUrl: undefined
+        imageUrl: undefined,
+        description: 'Gold Meal Package',
     },
     {
         id: 4,
         title: "Gold Plus",
         price: "KES 1800",
         details: `Starch:\n Swahili Rice\n Chinese stir-fried rice\n White and brown Chapati\n Extra Starch Options\n\nProteins:\n Beef Stew\n Chicken\n Goat fry, Pork or Fish\n\nVegetables:\n Vegetarian option\n Assortment of Stir Fried Vegetables\n\nDesert:\n Fruit Cuts or Ice Cream\n\nDrinks:\n Soda\n Water\n Fresh Juice`,
-        imageUrl: undefined
+        imageUrl: undefined,
+        description: 'Gold Plus Meal Package',
     },
     {
         id: 5,
         title: "Platinum",
         price: "KES 2800",
-        details: `Starter:\n Signature soup served with bread rolls\n\nStarch:\n Swahili Rice\n Chinese stir-fried rice\n White and brown Chapati\n Extra Starch Options\n\nProteins:\n Beef Stew\n Chicken\n Goat fry, Pork or Fish\n\nVegetables:\n Vegetarian Option\n Assortment of Stir Fried Vegetables\n\nDessert:\n Cake & Custard\n Fruit Cuts\n Ice Cream\n\nDrinks:\n Soda\n Water\n Fresh Juice`,
-        imageUrl: undefined
+        details: `<h3>Starter:</h3>\n Signature soup served with bread rolls\n\nStarch:\n Swahili Rice\n Chinese stir-fried rice\n White and brown Chapati\n Extra Starch Options\n\nProteins:\n Beef Stew\n Chicken\n Goat fry, Pork or Fish\n\nVegetables:\n Vegetarian Option\n Assortment of Stir Fried Vegetables\n\nDessert:\n Cake & Custard\n Fruit Cuts\n Ice Cream\n\nDrinks:\n Soda\n Water\n Fresh Juice`,
+        imageUrl: undefined,
+        description: 'Platinum Meal Package',
     },
     {
         id: 6,
         title: "Children Options",
         price: "Varies",
         details: `\n Fries\n Bhajias\n Sausages\n Meatballs\n Chicken nuggets\n Fish fingers\n Carrot & pineapple salad\n\nDrinks:\n Fruit\n Fresh juice\n Soda\n Water`,
-        imageUrl: undefined
+        imageUrl: undefined,
+        description: 'Children Options',
     },
 ];
 
-const packageColors = {
+// Define the type for package colors
+type PackageColors = {
+    [key: string]: string; // Key is the package name, value is the color class
+};
+
+const packageColors: PackageColors = {
     Bronze: "bg-gradient-to-r from-yellow-100 via yellow-400 to-yellow-800",
     Silver: "bg-gradient-to-r from-zinc-100 via zinc-300 to-zinc-400",
     Gold: "bg-gradient-to-r from-amber-100 via amber-400 to-amber-500",

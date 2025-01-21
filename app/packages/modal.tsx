@@ -20,7 +20,7 @@ const Modal = ({ onClose, package: pkg }: ModalProps) => {
                     <h2 className="text-3xl font-semibold text-gray-800">{pkg.title}</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 transition duration-200"
+                        className="text-gray-500 hover:text-gray-700 transition duration-200 rounded-full"
                     >
                         ✕
                     </button>
