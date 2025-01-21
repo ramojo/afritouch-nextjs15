@@ -4,6 +4,7 @@ import PackageLayout from '@/app/packages/layout';
 import { Package } from '@/app/types/package';
 import { useState } from 'react';
 import Modal from '@/app/packages/modal';
+import { Utensils } from 'lucide-react';
 
 const packages: Package[] = [
     {
@@ -111,6 +112,8 @@ const MealPackages = ({ onPackageSelect }: { onPackageSelect: (pkg: Package) => 
                             onClick={() => openModal(pkg)}
                         >
                             <h3 className="text-xl font-semibold text-gray-800">{pkg.title}</h3>
+                            <p className="text-gray-600">{pkg.description} <Utensils
+                                className="inline-block ml-12 mr-2" size={30} />   </p>
                             <p className="text-gray-600">{pkg.price}</p>
                             {/* <button className="mt-4 bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition duration-200">Select</button> */}
                         </div>
