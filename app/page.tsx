@@ -2,6 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 import logo from '../public/images/afritouch_logo_transparent.png'; // Update the path to your logo image
 
+
+const mailto: string = "info@afritouchcaterers.co.ke";
 const HomePage = () => {
   return (
     <div>
@@ -64,7 +66,7 @@ const HomePage = () => {
       <section className="py-20 bg-gray-100">
         <h2 className="text-4xl font-semibold text-center">Contact Us</h2>
         <p className="mt-4 text-center">Email: info@afritouchcaterers.co.ke</p>
-        <p className="text-center">Phone: (123) 456-7890</p>
+        <p className="text-center">Phone: +254 753 325 124 / +254 732 664 205</p>
         <form className="mt-8 max-w-md mx-auto">
           <label className="block mb-2">Name:</label>
           <input type="text" name="name" required className="w-full p-2 mb-4 border rounded" />
@@ -77,9 +79,9 @@ const HomePage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-4 bg-gray-800 text-white text-center">
+      {/* <footer className="py-4 bg-gray-800 text-white text-center">
         <p>&copy; {new Date().getFullYear()} Afritouch Caterers. All rights reserved.</p>
-      </footer>
+      </footer> */}
     </div>
   );
 };

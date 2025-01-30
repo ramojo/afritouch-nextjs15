@@ -35,19 +35,15 @@ const Modal = ({ onClose, package: pkg }: ModalProps) => {
                             <h3 className="text-xl font-semibold text-gray-800">{pkg.title}</h3>
                             <p className="text-gray-600 mb-2">{pkg.description}</p>
                             <h4 className="font-semibold text-gray-700">Included Items:</h4>
-                            <ul className="list-disc list-inside text-gray-600">
-                                {detailsList.map((detail, index) => (
-                                    <li key={index}>{detail.trim()}</li>
-                                ))}
-                            </ul>
+                            {detailsList.map((detail, index) => (
+                                <p key={index} className="text-gray-600 mb-2">{detail.trim()}</p>
+                            ))}
                             <h4 className="font-semibold text-gray-700">Excluded Items:</h4>
-                            <ul className="list-disc list-inside text-gray-600">
-                                {excludedItems.length > 0 ? (
-                                    excludedItems.map((item, index) => <li key={index}>{item}</li>)
-                                ) : (
-                                    <li>No items available</li>
-                                )}
-                            </ul>
+                            {excludedItems.length > 0 ? (
+                                excludedItems.map((item, index) => <p key={index} className="text-gray-600 mb-2">{item}</p>)
+                            ) : (
+                                <p className="text-gray-600 mb-2">No items available</p>
+                            )}
                         </div>
                     </div>
                 </div>
