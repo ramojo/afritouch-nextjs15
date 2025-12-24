@@ -86,13 +86,13 @@ const packages: PackageData[] = [
 const MenuSection = ({ title, items, icon, colorClass = "text-primary" }: { title: string, items: string[], icon: React.ReactNode, colorClass?: string }) => {
     if (!items || items.length === 0) return null;
     return (
-        <div className="mb-4 last:mb-0">
-            <h4 className={`flex items-center gap-2 mb-2 font-serif text-base font-semibold ${colorClass}`}>
+        <div className="mb-5 last:mb-0">
+            <h4 className={`flex items-center gap-2 mb-2.5 font-serif text-base font-semibold ${colorClass}`}>
                 {icon} {title}
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-0.5">
+            <div className="grid grid-cols-1 gap-x-1 gap-y-1 px-8">
                 {items.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-muted-foreground text-sm">
+                    <div key={idx} className="flex items-start gap-2 text-muted-foreground text-md">
                         <Check className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
                         <span>{item}</span>
                     </div>
@@ -129,37 +129,51 @@ export default function PackagesPage() {
                     {packages.map((pkg) => (
                         <TabsContent key={pkg.id} value={pkg.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <Card className={`overflow-hidden border-t-8 shadow-2xl ${pkg.color}`}>
-                                <CardHeader className="text-center bg-muted/10 pb-5 pt-5">
+                                <CardHeader className="text-center bg-muted/10 pb-6 pt-6 relative">
                                     {pkg.popular && (
                                         <Badge className="w-fit mx-auto mb-3 bg-secondary text-primary hover:bg-secondary/90">Most Popular Choice</Badge>
                                     )}
                                     <h2 className="text-3xl font-serif font-bold text-primary mb-2">{pkg.name}</h2>
                                     <p className="text-3xl font-bold text-secondary">{pkg.price} <span className="text-lg font-normal text-muted-foreground">/ person</span></p>
                                     <p className="text-muted-foreground max-w-lg mx-auto mt-3 italic">{pkg.description}</p>
+
+                                    {/* Book Button - Top Right */}
+                                    <div className="absolute top-6 right-6 hidden md:block">
+                                        <QuoteDialog
+                                            packageName={pkg.name}
+                                            trigger={
+                                                <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-full text-sm font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                                                    Book Menu <ArrowRight className="w-4 h-4" />
+                                                </button>
+                                            }
+                                        />
+                                    </div>
                                 </CardHeader>
-                                <CardContent className="p-5 md:p-7 bg-white">
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
+                                <CardContent className="p-6 md:p-8 bg-white">
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="space-y-5">
                                             <MenuSection title="Starch Selection" items={pkg.starch} icon={<ChefHat className="w-5 h-5" />} />
                                             <MenuSection title="Protein Selection" items={pkg.protein} icon={<Utensils className="w-5 h-5" />} />
                                         </div>
-                                        <div className="space-y-4">
+                                        <div className="space-y-5">
                                             <MenuSection title="Fresh Vegetables" items={pkg.vegetables} icon={<Leaf className="w-5 h-5" />} />
                                             <MenuSection title="Dessert & Sweet Treats" items={pkg.dessert || []} icon={<Coffee className="w-5 h-5" />} />
                                             <MenuSection title="Beverages" items={pkg.drinks || []} icon={<Wine className="w-5 h-5" />} />
                                         </div>
                                     </div>
+
+                                    {/* Book Button - Mobile (Bottom) */}
+                                    <div className="mt-6 flex justify-center md:hidden">
+                                        <QuoteDialog
+                                            packageName={pkg.name}
+                                            trigger={
+                                                <button className="bg-primary hover:bg-primary/90 text-white px-10 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                                                    Book This Menu <ArrowRight className="w-5 h-5" />
+                                                </button>
+                                            }
+                                        />
+                                    </div>
                                 </CardContent>
-                                <CardFooter className="bg-muted/30 p-5 flex justify-center">
-                                    <QuoteDialog
-                                        packageName={pkg.name}
-                                        trigger={
-                                            <button className="bg-primary hover:bg-primary/90 text-white px-10 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
-                                                Book This Menu <ArrowRight className="w-5 h-5" />
-                                            </button>
-                                        }
-                                    />
-                                </CardFooter>
                             </Card>
                         </TabsContent>
                     ))}

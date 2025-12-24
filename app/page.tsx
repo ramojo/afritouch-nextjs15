@@ -41,15 +41,15 @@ const HomePage = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-background text-center">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="space-y-6 text-center lg:text-left">
+          <div className="grid gap-12 lg:grid-cols-2 items-center max-w-6xl mx-auto">
+            <div className="space-y-6 text-center">
               <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">About Afritouch</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 At Afritouch, we believe that food is the heart of every celebration. We specialize in providing exquisite catering services that blend traditional flavors with modern culinary techniques. Our mission is to create unforgettable dining experiences tailored to your specific needs and preferences.
               </p>
-              <div className="flex gap-4 justify-center lg:justify-start">
+              <div className="flex gap-4 justify-center">
                 <div className="flex items-center gap-2 text-primary font-semibold">
                   <Star className="fill-secondary text-secondary" /> Premium Quality
                 </div>
@@ -66,13 +66,13 @@ const HomePage = () => {
       </section>
 
       {/* Services Offered */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24 bg-muted/30 text-center">
         <div className="container px-4 md:px-6">
           <div className="space-y-4 text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">Our Services</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">We bring the restaurant experience to your venue of choice.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="bg-card border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
               <CardHeader className="text-center">
                 <Users className="w-12 h-12 text-secondary mx-auto mb-4" />
@@ -111,7 +111,7 @@ const HomePage = () => {
       <section className="py-24 bg-background">
         <div className="container px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary text-center mb-12">Culinary Gallery</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] max-w-6xl mx-auto">
             <div className="col-span-2 row-span-2 relative rounded-xl overflow-hidden hover:opacity-90 transition-opacity shadow-lg">
               <Image src="/images/hero_image_afritouch.jpg" alt="Gallery 1" fill className="object-cover" />
             </div>

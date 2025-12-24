@@ -16,7 +16,12 @@ interface QuoteDialogProps {
 
 const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialogProps) => {
     const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [whatsapp, setWhatsapp] = useState("");
     const [email, setEmail] = useState("");
+    const [guestCount, setGuestCount] = useState("");
+    const [eventDate, setEventDate] = useState("");
+    const [location, setLocation] = useState("");
     const [notes, setNotes] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,7 +34,7 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
         // In a real app, this would be an API call. 
         // For now, we'll construct a mailto link as a fallback or just alert success.
         const subject = `Quote Request: ${packageName}`;
-        const body = `Name: ${name}\nEmail: ${email}\nPackage: ${packageName}\n\nNotes:\n${notes}`;
+        const body = `Name: ${name}\nEmail: ${email}\nPackage: ${packageName}\nGuest Count: ${guestCount}\nEvent Date: ${eventDate}\nLocation: ${location}\n\nAdditional Notes:\n${notes}`;
         window.location.href = `mailto:info@afritouchcaterers.co.ke?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
         setIsSubmitting(false);
@@ -39,7 +44,7 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="font-serif text-2xl text-primary">Request a Quote</DialogTitle>
                     <DialogDescription>
@@ -47,24 +52,82 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Your Name"
-                            required
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Your Name"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="phone">Phone</Label>
+                            <Input
+                                id="phone"
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="Your Phone Number"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                            <Input
+                                id="whatsapp"
+                                type="tel"
+                                value={whatsapp}
+                                onChange={(e) => setWhatsapp(e.target.value)}
+                                placeholder="If different from phone number"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="guestCount">Guest Count</Label>
+                            <Input
+                                id="guestCount"
+                                type="number"
+                                min="1"
+                                value={guestCount}
+                                onChange={(e) => setGuestCount(e.target.value)}
+                                placeholder="e.g., 50"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="eventDate">Event Date</Label>
+                            <Input
+                                id="eventDate"
+                                type="date"
+                                value={eventDate}
+                                onChange={(e) => setEventDate(e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="location">Event Location</Label>
                         <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@example.com"
+                            id="location"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Venue or address"
                             required
                         />
                     </div>
@@ -74,8 +137,8 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
                             id="notes"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            placeholder="Any specific dietary requirements, guest count, or date..."
-                            className="min-h-[100px]"
+                            placeholder="Any specific dietary requirements, preferences, or special requests..."
+                            className="min-h-[80px]"
                         />
                     </div>
                     <DialogFooter>
