@@ -1,0 +1,152 @@
+[
+    {
+        "id": "bronze",
+        "name": "Bronze Menu",
+        "price": "KES 600",
+        "description": "Perfect for budget-conscious events that don't compromise on taste.",
+        "starch": [
+            "Pilau",
+            "Vegetable Rice",
+            "Chapati",
+            "A choice of Mukimo, Mashed Potatoes or Parsley Potatoes"
+        ],
+        "protein": [
+            "Beef stew"
+        ],
+        "vegetables": [
+            "Vegetable Salad or Cooked Vegetables"
+        ],
+        "dessert": [
+            "Fruit in season"
+        ],
+        "drinks": [],
+        "color": "border-amber-700/50",
+        "popular": false,
+        "images": []
+    },
+    {
+        "id": "silver",
+        "name": "Silver Menu",
+        "price": "KES 700",
+        "description": "A balanced selection offering more variety for your guests.",
+        "starch": [
+            "Rice garnished with vegetables",
+            "Pilau",
+            "Chapati",
+            "A choice of Mukimo, Mashed Potatoes or Parsley Potatoes"
+        ],
+        "protein": [
+            "Beef Stew",
+            "Chicken"
+        ],
+        "vegetables": [
+            "Vegetable Salad or Cooked Vegetables"
+        ],
+        "dessert": [
+            "Fruit in season"
+        ],
+        "drinks": [],
+        "color": "border-slate-400",
+        "popular": true,
+        "images": []
+    },
+    {
+        "id": "gold",
+        "name": "Gold Menu",
+        "price": "KES 1200",
+        "description": "Our diverse menu with premium options including drinks.",
+        "starch": [
+            "Swahili Rice",
+            "Vegetable stir-fried Rice",
+            "White and brown Chapati",
+            "*Extra Starch Option"
+        ],
+        "protein": [
+            "Beef Stew",
+            "Chicken",
+            "Goat fry, Pork or Fish"
+        ],
+        "vegetables": [
+            "Stir Fried Vegetables"
+        ],
+        "dessert": [
+            "Fruit Cuts"
+        ],
+        "drinks": [
+            "Soda",
+            "Water"
+        ],
+        "color": "border-yellow-500",
+        "popular": false,
+        "images": []
+    },
+    {
+        "id": "gold-plus",
+        "name": "Gold Plus Menu",
+        "price": "KES 1800",
+        "description": "An elevated dining experience with extended variety.",
+        "starch": [
+            "Swahili Rice",
+            "Chinese stir-fried rice",
+            "White and brown Chapati",
+            "*Extra Starch Options"
+        ],
+        "protein": [
+            "Beef Stew",
+            "Chicken",
+            "Goat fry, Pork or Fish"
+        ],
+        "vegetables": [
+            "Vegetarian option",
+            "Assortment of Stir Fried Vegetables"
+        ],
+        "dessert": [
+            "Fruit Cuts or Ice Cream"
+        ],
+        "drinks": [
+            "Soda",
+            "Water",
+            "Fresh Juice"
+        ],
+        "color": "border-yellow-600",
+        "popular": false,
+        "images": []
+    },
+    {
+        "id": "platinum",
+        "name": "Platinum Menu",
+        "price": "KES 2200",
+        "description": "The ultimate culinary experience with comprehensive meal courses.",
+        "starch": [
+            "Swahili Pilau",
+            "Vegetable Rice",
+            "Soft Layered Chapati",
+            "Mukimo or Parsley Potatoes",
+            "Roast Potatoes/Wedges"
+        ],
+        "protein": [
+            "Beef Wet Fry/Stew",
+            "Glazed Chicken",
+            "Mbuzi Wet Fry",
+            "Pan Seared Fish Fillet"
+        ],
+        "vegetables": [
+            "Creamed Spinach",
+            "Traditional Vegetables"
+        ],
+        "dessert": [
+            "Assorted Fruit Platter",
+            "Ice Cream",
+            "Cake Slices"
+        ],
+        "drinks": [
+            "Soda",
+            "Mineral Water",
+            "Fresh Juice",
+            "Tea/Coffee"
+        ],
+        "color": "border-slate-300",
+        "popular": false,
+        "images": []
+    }
+]

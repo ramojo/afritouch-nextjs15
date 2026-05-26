@@ -1,0 +1,11 @@
+[
+    {
+        "id": "c9315bd4-36a6-490a-b25b-1a584a79d873",
+        "username": "admin",
+        "salt": "e065a07b0f60df1289238cc675c3637f",
+        "passwordHash": "62cbaa4d38c5885c6e52152ecd236da636972a3edbe7e79afb0ee286d298bdc066039bd2ca9a60cf43303044a9cf07fd5f90dea8ec3ac26e3377236d03ee27eb",
+        "role": "superadmin",
+        "createdAt": "2026-05-14T19:19:15.175Z",
+        "updatedAt": "2026-05-14T19:19:15.175Z"
+    }
+]

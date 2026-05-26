@@ -11,7 +11,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center hero-section text-white overflow-hidden">
         {/* Lighter gradient overlay for approachable feel */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70 z-0"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/30 to-black/70 z-0"></div>
 
         <div className="relative z-10 container px-4 md:px-6 space-y-8 animate-in fade-in zoom-in duration-1000 flex flex-col items-center">
           <div className="space-y-6 flex flex-col items-center">
@@ -21,7 +21,7 @@ const HomePage = () => {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-serif tracking-tight drop-shadow-2xl">
               Taste the <span className="text-amber-400">Excellence</span> <br /> in Every Bite
             </h1>
-            <p className="mx-auto max-w-[800px] text-xl md:text-2xl text-gray-100 font-light drop-shadow-lg leading-relaxed">
+            <p className="mx-auto max-w-200 text-xl md:text-2xl text-gray-100 font-light drop-shadow-lg leading-relaxed">
               From intimate gatherings to grand corporate banquets, we bring the authentic flavors of Africa to your table.
             </p>
           </div>
@@ -58,8 +58,8 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full">
-              <Image src="/images/hero_image_afritouch_2.jpg" alt="Afritouch Chef" fill className="object-cover" />
+            <div className="relative h-100 rounded-2xl overflow-hidden shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full">
+              <Image src="/images/hero_image_afritouch_2.jpg" alt="Afritouch Chef" fill sizes="(min-width: 1024px) 32rem, 100vw" className="object-cover" />
             </div>
           </div>
         </div>
@@ -113,16 +113,16 @@ const HomePage = () => {
           <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary text-center mb-12">Culinary Gallery</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] max-w-6xl mx-auto">
             <div className="col-span-2 row-span-2 relative rounded-xl overflow-hidden hover:opacity-90 transition-opacity shadow-lg">
-              <Image src="/images/hero_image_afritouch.jpg" alt="Gallery 1" fill className="object-cover" />
+              <Image src="/images/hero_image_afritouch.jpg" alt="Gallery 1" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
             <div className="relative rounded-xl overflow-hidden hover:opacity-90 transition-opacity shadow-lg">
-              <Image src="/images/hero_image_afritouch_3.jpg" alt="Gallery 2" fill className="object-cover" />
+              <Image src="/images/hero_image_afritouch_3.jpg" alt="Gallery 2" fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
             </div>
             <div className="relative rounded-xl overflow-hidden hover:opacity-90 transition-opacity shadow-lg">
-              <Image src="/images/hero_image_afritouch_4.jpg" alt="Gallery 3" fill className="object-cover" />
+              <Image src="/images/hero_image_afritouch_4.jpg" alt="Gallery 3" fill sizes="(min-width: 768px) 25vw, 50vw" className="object-cover" />
             </div>
             <div className="col-span-2 relative rounded-xl overflow-hidden hover:opacity-90 transition-opacity shadow-lg">
-              <Image src="/images/hero_image_afritouch_5.jpg" alt="Gallery 4" fill className="object-cover" />
+              <Image src="/images/hero_image_afritouch_5.jpg" alt="Gallery 4" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
             </div>
           </div>
         </div>
