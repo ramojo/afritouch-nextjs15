@@ -57,7 +57,7 @@ const achievements = [
     {
         icon: <ShieldCheck className="w-8 h-8 text-secondary" />,
         stat: "1,000,000+",
-        label: "Meals served in the last 5 years — zero cases of food poisoning.",
+        label: "Meals served in the last 10 years — zero cases of food poisoning.",
     },
     {
         icon: <Utensils className="w-8 h-8 text-secondary" />,
@@ -483,10 +483,15 @@ export default function AboutUsPage() {
                         </a>
                     </div>
                     <div className="pt-2 text-white/70">
-                        Director:{" "}
+                        Directors:{" "}
                         <span className="font-semibold text-white">
                             Gaceri Kiara
                         </span>
+                        
+                        <span className="font-semibold text-white">
+                            &nbsp;&amp;&nbsp; Allan Ramogo
+                        </span>
+                        
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                         <Link href="/packages">

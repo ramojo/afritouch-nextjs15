@@ -24,25 +24,64 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
     const [location, setLocation] = useState("");
     const [notes, setNotes] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Simulate network request
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setError(null);
 
-        // In a real app, this would be an API call. 
-        // For now, we'll construct a mailto link as a fallback or just alert success.
-        const subject = `Quote Request: ${packageName}`;
-        const body = `Name: ${name}\nEmail: ${email}\nPackage: ${packageName}\nGuest Count: ${guestCount}\nEvent Date: ${eventDate}\nLocation: ${location}\n\nAdditional Notes:\n${notes}`;
-        window.location.href = `mailto:info@afritouchcaterers.co.ke?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        try {
+            const res = await fetch("/api/quote", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    whatsapp,
+                    packageName,
+                    guestCount,
+                    eventDate,
+                    location,
+                    notes,
+                }),
+            });
 
-        setIsSubmitting(false);
-        if (onOpenChange) onOpenChange(false);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data?.error || "Something went wrong. Please try again.");
+            }
+
+            setSuccess(true);
+            // Reset the form fields after a successful send.
+            setName("");
+            setPhone("");
+            setWhatsapp("");
+            setEmail("");
+            setGuestCount("");
+            setEventDate("");
+            setLocation("");
+            setNotes("");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to send inquiry.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        if (!open) {
+            // Clear transient state when the dialog closes.
+            setSuccess(false);
+            setError(null);
+        }
+        onOpenChange?.(open);
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
             <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
@@ -51,6 +90,25 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
                         Send us an inquiry about the <span className="font-semibold text-foreground">{packageName}</span>. We'll get back to you shortly.
                     </DialogDescription>
                 </DialogHeader>
+                {success ? (
+                    <div className="flex flex-col items-center gap-3 py-10 text-center">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-3xl text-green-600">
+                            ✓
+                        </div>
+                        <h3 className="font-serif text-xl text-primary">Inquiry sent!</h3>
+                        <p className="max-w-sm text-sm text-muted-foreground">
+                            Thank you, {name || "there"}. We&apos;ve received your request and
+                            will get back to you shortly at the contact details you provided.
+                        </p>
+                        <Button
+                            type="button"
+                            onClick={() => handleOpenChange(false)}
+                            className="mt-2 bg-primary text-white hover:bg-primary/90"
+                        >
+                            Close
+                        </Button>
+                    </div>
+                ) : (
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
@@ -141,12 +199,18 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
                             className="min-h-[80px]"
                         />
                     </div>
+                    {error && (
+                        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+                            {error}
+                        </p>
+                    )}
                     <DialogFooter>
                         <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90 text-white font-semibold">
-                            {isSubmitting ? "Opening Mail..." : "Send Inquiry"}
+                            {isSubmitting ? "Sending..." : "Send Inquiry"}
                         </Button>
                     </DialogFooter>
                 </form>
+                )}
             </DialogContent>
         </Dialog>
     );

@@ -153,3 +153,65 @@
   animation-timing-function: linear;
   color: var(--primary-color);
 }
+/* Lightbox navigation transitions */
+@keyframes lbNext {
+  0% {
+    opacity: 0;
+    transform: perspective(1400px) translateX(55%) rotateY(72deg)
+      rotate(var(--lb-rand, 0deg)) scale(0.82);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) translateX(0) rotateY(0deg) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes lbPrev {
+  0% {
+    opacity: 0;
+    transform: perspective(1400px) translateX(-55%) rotateY(-72deg)
+      rotate(var(--lb-rand, 0deg)) scale(0.82);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) translateX(0) rotateY(0deg) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes lbIn {
+  0% {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(18deg) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) rotateY(0deg) scale(1);
+  }
+}
+
+.lb-anim-next {
+  animation: lbNext 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transform-origin: center;
+}
+.lb-anim-prev {
+  animation: lbPrev 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transform-origin: center;
+}
+.lb-anim-in {
+  animation: lbIn 0.45s ease-out both;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-anim-next,
+  .lb-anim-prev,
+  .lb-anim-in {
+    animation: none;
+  }
+}
