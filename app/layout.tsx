@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/app/components/Header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { isClerk } from "@/lib/config";
 
-const playfair = Playfair_Display({
+// Fraunces: a warm, characterful display serif — appetising and editorial
+// rather than the formal, "officey" Playfair.
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-fraunces",
+  display: "swap",
+  axes: ["SOFT", "opsz"],
 });
 
-const inter = Inter({
+// Plus Jakarta Sans: a friendly, modern body face with rounded warmth.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-jakarta",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +35,7 @@ export default function RootLayout({
   const body = (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${inter.variable} antialiased font-sans`}
+        className={`${fraunces.variable} ${jakarta.variable} antialiased font-sans`}
       >
         <ThemeProvider
           attribute="class"

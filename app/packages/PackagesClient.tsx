@@ -16,6 +16,7 @@ import {
     ArrowRight,
 } from "lucide-react";
 import QuoteDialog from "@/components/QuoteDialog";
+import { Reveal } from "@/components/gallery/reveal";
 import { Package } from "@/app/types/package";
 
 const MenuSection = ({
@@ -68,7 +69,7 @@ export default function PackagesClient({ packages }: { packages: Package[] }) {
     return (
         <div className="min-h-screen bg-linear-to-b from-background to-muted/20 pt-24 py-10 px-4 md:px-8">
             <div className="max-w-6xl mx-auto space-y-6">
-                <div className="text-center space-y-3">
+                <Reveal className="text-center space-y-3">
                     <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">
                         Curated Catering Packages
                     </h1>
@@ -76,7 +77,7 @@ export default function PackagesClient({ packages }: { packages: Package[] }) {
                         Explore our carefully designed menus. Select a package
                         to see the delicious details.
                     </p>
-                </div>
+                </Reveal>
 
                 <Tabs defaultValue={defaultId} className="w-full">
                     <TabsList className="w-full flex h-auto flex-wrap justify-center gap-2 bg-transparent mb-5">

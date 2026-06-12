@@ -13,12 +13,12 @@ type Tile = {
 
 // Overlapping, layered composition — deliberately maximalist.
 const tiles: Tile[] = [
-    { src: "/images/gallery/gallery_19.jpg", className: "left-[4%] top-[18%] w-[26vw] max-w-[300px]", rotate: -8, depth: 0.18 },
-    { src: "/images/gallery/gallery_30.jpg", className: "left-[20%] bottom-[8%] w-[20vw] max-w-[230px]", rotate: 6, depth: 0.34 },
+    { src: "/images/gallery/gallery_24.jpg", className: "left-[4%] top-[18%] w-[26vw] max-w-[300px]", rotate: -8, depth: 0.18 },
+    { src: "/images/gallery/gallery_15.jpg", className: "left-[20%] bottom-[8%] w-[20vw] max-w-[230px]", rotate: 6, depth: 0.34 },
     { src: "/images/gallery/gallery_05.jpg", className: "right-[6%] top-[14%] w-[24vw] max-w-[280px]", rotate: 7, depth: 0.22 },
-    { src: "/images/gallery/gallery_60.jpg", className: "right-[16%] bottom-[10%] w-[18vw] max-w-[210px]", rotate: -6, depth: 0.4 },
-    { src: "/images/gallery/gallery_38.jpg", className: "left-[38%] top-[6%] w-[16vw] max-w-[180px]", rotate: -3, depth: 0.5 },
-    { src: "/images/gallery/gallery_47.jpg", className: "right-[34%] bottom-[4%] w-[15vw] max-w-[170px]", rotate: 4, depth: 0.6 },
+    { src: "/images/gallery/gallery_11.jpg", className: "right-[16%] bottom-[10%] w-[18vw] max-w-[210px]", rotate: -6, depth: 0.4 },
+    { src: "/images/gallery/gallery_66.jpg", className: "left-[38%] top-[6%] w-[16vw] max-w-[180px]", rotate: -3, depth: 0.5 },
+    { src: "/images/gallery/gallery_25.jpg", className: "right-[34%] bottom-[4%] w-[15vw] max-w-[170px]", rotate: 4, depth: 0.6 },
 ];
 
 export function HeroCollage() {

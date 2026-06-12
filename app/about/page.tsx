@@ -9,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Reveal } from "@/components/gallery/reveal";
 import {
     Award,
     Building2,
@@ -124,8 +125,8 @@ export default function AboutUsPage() {
             {/* Hero */}
             <section className="relative min-h-[60vh] flex items-center justify-center text-center text-white overflow-hidden">
                 <Image
-                    src="/images/hero_image_afritouch_3.jpg"
-                    alt="Afritouch Caterers"
+                    src="/images/gallery/gallery_67.jpg"
+                    alt="Guests being served at an Afritouch event"
                     fill
                     priority
                     sizes="100vw"
@@ -151,7 +152,7 @@ export default function AboutUsPage() {
             <section className="py-24 bg-background">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
                     <div className="grid gap-12 lg:grid-cols-2 items-center">
-                        <div className="space-y-6">
+                        <Reveal className="space-y-6">
                             <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                                 Who We Are
                             </h2>
@@ -195,16 +196,16 @@ export default function AboutUsPage() {
                                     Certified & Safe
                                 </div>
                             </div>
-                        </div>
-                        <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full">
+                        </Reveal>
+                        <Reveal delay={120} className="relative h-96 rounded-2xl overflow-hidden shadow-2xl skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full">
                             <Image
-                                src="/images/hero_image_afritouch_2.jpg"
-                                alt="Afritouch Chefs at work"
+                                src="/images/gallery/gallery_40.jpg"
+                                alt="A smiling Afritouch chef"
                                 fill
                                 sizes="(min-width: 1024px) 32rem, 100vw"
-                                className="object-cover"
+                                className="object-cover object-top"
                             />
-                        </div>
+                        </Reveal>
                     </div>
                 </div>
             </section>
@@ -213,16 +214,16 @@ export default function AboutUsPage() {
             <section className="py-24 bg-muted/30">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
                     <div className="grid gap-12 lg:grid-cols-2 items-center">
-                        <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl -skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full order-2 lg:order-1">
+                        <Reveal className="relative h-96 rounded-2xl overflow-hidden shadow-2xl -skew-y-3 hover:skew-y-0 transition-transform duration-500 max-w-lg mx-auto w-full order-2 lg:order-1">
                             <Image
-                                src="/images/hero_image_afritouch_4.jpg"
-                                alt="Afritouch event service"
+                                src="/images/gallery/gallery_79.jpg"
+                                alt="Afritouch team serving a busy buffet line"
                                 fill
                                 sizes="(min-width: 1024px) 32rem, 100vw"
                                 className="object-cover"
                             />
-                        </div>
-                        <div className="space-y-6 order-1 lg:order-2">
+                        </Reveal>
+                        <Reveal delay={120} className="space-y-6 order-1 lg:order-2">
                             <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                                 Two Decades of Experience
                             </h2>
@@ -244,7 +245,7 @@ export default function AboutUsPage() {
                                 around the world, and respond to requests at
                                 the shortest possible notice.
                             </p>
-                        </div>
+                        </Reveal>
                     </div>
                 </div>
             </section>
@@ -252,7 +253,7 @@ export default function AboutUsPage() {
             {/* Services */}
             <section className="py-24 bg-background">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
-                    <div className="text-center mb-12 space-y-3">
+                    <Reveal className="text-center mb-12 space-y-3">
                         <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                             What We Do
                         </h2>
@@ -261,25 +262,24 @@ export default function AboutUsPage() {
                             commitment to fresh, tasty, quality food at
                             competitive rates.
                         </p>
-                    </div>
+                    </Reveal>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {services.map((s) => (
-                            <Card
-                                key={s.title}
-                                className="bg-card border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-2"
-                            >
-                                <CardHeader className="text-center">
-                                    <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center">
-                                        {s.icon}
-                                    </div>
-                                    <CardTitle className="font-serif text-2xl text-primary">
-                                        {s.title}
-                                    </CardTitle>
-                                    <CardDescription className="text-base leading-relaxed">
-                                        {s.description}
-                                    </CardDescription>
-                                </CardHeader>
-                            </Card>
+                        {services.map((s, i) => (
+                            <Reveal key={s.title} delay={i * 120}>
+                                <Card className="h-full bg-card border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                                    <CardHeader className="text-center">
+                                        <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center">
+                                            {s.icon}
+                                        </div>
+                                        <CardTitle className="font-serif text-2xl text-primary">
+                                            {s.title}
+                                        </CardTitle>
+                                        <CardDescription className="text-base leading-relaxed">
+                                            {s.description}
+                                        </CardDescription>
+                                    </CardHeader>
+                                </Card>
+                            </Reveal>
                         ))}
                     </div>
                 </div>
@@ -288,20 +288,21 @@ export default function AboutUsPage() {
             {/* By the numbers */}
             <section className="py-24 bg-primary text-primary-foreground">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
-                    <div className="text-center mb-12 space-y-3">
+                    <Reveal className="text-center mb-12 space-y-3">
                         <h2 className="text-3xl md:text-5xl font-bold font-serif text-amber-300">
-                            By the Numbers
+                            The Proof Is in the Pudding
                         </h2>
                         <p className="text-xl text-white/80 max-w-2xl mx-auto">
-                            A track record built on consistency, safety and
-                            scale.
+                            Years of happy plates — served with the same care,
+                            consistency and warmth, at any scale.
                         </p>
-                    </div>
+                    </Reveal>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {achievements.map((a) => (
-                            <div
+                        {achievements.map((a, i) => (
+                            <Reveal
                                 key={a.stat}
-                                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors"
+                                delay={i * 120}
+                                className="h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors"
                             >
                                 <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center">
                                     {a.icon}
@@ -312,7 +313,7 @@ export default function AboutUsPage() {
                                 <p className="text-sm text-white/80 leading-relaxed">
                                     {a.label}
                                 </p>
-                            </div>
+                            </Reveal>
                         ))}
                     </div>
                 </div>
@@ -321,7 +322,7 @@ export default function AboutUsPage() {
             {/* Capacity & Management */}
             <section className="py-24 bg-background">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
-                    <div className="text-center mb-12 space-y-3">
+                    <Reveal className="text-center mb-12 space-y-3">
                         <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                             Built to Deliver, at Scale
                         </h2>
@@ -329,49 +330,55 @@ export default function AboutUsPage() {
                             Experienced leadership, a qualified team and the
                             logistics to back it up.
                         </p>
-                    </div>
+                    </Reveal>
                     <div className="grid md:grid-cols-3 gap-6">
-                        <Card className="border-none shadow-lg">
-                            <CardHeader>
-                                <ChefHat className="w-10 h-10 text-secondary mb-3" />
-                                <CardTitle className="font-serif text-xl text-primary">
-                                    Qualified Staff
-                                </CardTitle>
-                                <CardDescription className="text-base leading-relaxed">
-                                    Experienced chefs capable of preparing
-                                    international dishes. All staff carry
-                                    health certifications and are qualified by
-                                    the relevant authorities.
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
-                        <Card className="border-none shadow-lg">
-                            <CardHeader>
-                                <Users className="w-10 h-10 text-secondary mb-3" />
-                                <CardTitle className="font-serif text-xl text-primary">
-                                    Logistics
-                                </CardTitle>
-                                <CardDescription className="text-base leading-relaxed">
-                                    Capacity to serve over 3,000 meals
-                                    simultaneously across different venues —
-                                    on time, every time.
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
-                        <Card className="border-none shadow-lg">
-                            <CardHeader>
-                                <Building2 className="w-10 h-10 text-secondary mb-3" />
-                                <CardTitle className="font-serif text-xl text-primary">
-                                    Strong Foundation
-                                </CardTitle>
-                                <CardDescription className="text-base leading-relaxed">
-                                    Two directors lead policy and strategy
-                                    under the board of Hometouch Catering
-                                    Services Ltd, with an annual turnover of
-                                    approximately KES 40 million.
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
+                        <Reveal>
+                            <Card className="h-full border-none shadow-lg">
+                                <CardHeader>
+                                    <ChefHat className="w-10 h-10 text-secondary mb-3" />
+                                    <CardTitle className="font-serif text-xl text-primary">
+                                        Qualified Staff
+                                    </CardTitle>
+                                    <CardDescription className="text-base leading-relaxed">
+                                        Experienced chefs capable of preparing
+                                        international dishes. All staff carry
+                                        health certifications and are qualified by
+                                        the relevant authorities.
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Reveal>
+                        <Reveal delay={120}>
+                            <Card className="h-full border-none shadow-lg">
+                                <CardHeader>
+                                    <Users className="w-10 h-10 text-secondary mb-3" />
+                                    <CardTitle className="font-serif text-xl text-primary">
+                                        Logistics
+                                    </CardTitle>
+                                    <CardDescription className="text-base leading-relaxed">
+                                        Capacity to serve over 3,000 meals
+                                        simultaneously across different venues —
+                                        on time, every time.
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Reveal>
+                        <Reveal delay={240}>
+                            <Card className="h-full border-none shadow-lg">
+                                <CardHeader>
+                                    <Building2 className="w-10 h-10 text-secondary mb-3" />
+                                    <CardTitle className="font-serif text-xl text-primary">
+                                        Strong Foundation
+                                    </CardTitle>
+                                    <CardDescription className="text-base leading-relaxed">
+                                        Two directors lead policy and strategy
+                                        under the board of Hometouch Catering
+                                        Services Ltd, with an annual turnover of
+                                        approximately KES 40 million.
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Reveal>
                     </div>
                 </div>
             </section>
@@ -379,7 +386,7 @@ export default function AboutUsPage() {
             {/* Values & CSR */}
             <section className="py-24 bg-muted/30">
                 <div className="container px-4 md:px-6 max-w-6xl mx-auto">
-                    <div className="text-center mb-12 space-y-3">
+                    <Reveal className="text-center mb-12 space-y-3">
                         <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                             Our Values & Community
                         </h2>
@@ -387,25 +394,24 @@ export default function AboutUsPage() {
                             &ldquo;Fresh, tasty, quality food at very
                             competitive rates.&rdquo;
                         </p>
-                    </div>
+                    </Reveal>
                     <div className="grid md:grid-cols-3 gap-6">
-                        {csrItems.map((c) => (
-                            <Card
-                                key={c.title}
-                                className="bg-card border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-                            >
-                                <CardContent className="p-6 space-y-3">
-                                    <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
-                                        {c.icon}
-                                    </div>
-                                    <h3 className="font-serif text-xl font-semibold text-primary">
-                                        {c.title}
-                                    </h3>
-                                    <p className="text-muted-foreground leading-relaxed">
-                                        {c.description}
-                                    </p>
-                                </CardContent>
-                            </Card>
+                        {csrItems.map((c, i) => (
+                            <Reveal key={c.title} delay={i * 120}>
+                                <Card className="h-full bg-card border-none shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+                                    <CardContent className="p-6 space-y-3">
+                                        <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                                            {c.icon}
+                                        </div>
+                                        <h3 className="font-serif text-xl font-semibold text-primary">
+                                            {c.title}
+                                        </h3>
+                                        <p className="text-muted-foreground leading-relaxed">
+                                            {c.description}
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            </Reveal>
                         ))}
                     </div>
                 </div>
@@ -414,7 +420,7 @@ export default function AboutUsPage() {
             {/* Notable Clients */}
             <section className="py-24 bg-background">
                 <div className="container px-4 md:px-6 max-w-5xl mx-auto">
-                    <div className="text-center mb-12 space-y-3">
+                    <Reveal className="text-center mb-12 space-y-3">
                         <h2 className="text-3xl md:text-5xl font-bold font-serif text-primary">
                             Notable Clients
                         </h2>
@@ -422,15 +428,16 @@ export default function AboutUsPage() {
                             A small selection of organizations that trust us
                             with their meals.
                         </p>
-                    </div>
+                    </Reveal>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {clients.map((client) => (
-                            <div
+                        {clients.map((client, i) => (
+                            <Reveal
                                 key={client}
+                                delay={(i % 3) * 90}
                                 className="bg-card border border-border/50 rounded-lg px-4 py-3 text-center text-sm md:text-base font-medium text-primary hover:border-secondary hover:shadow-md transition-all"
                             >
                                 {client}
-                            </div>
+                            </Reveal>
                         ))}
                     </div>
                 </div>

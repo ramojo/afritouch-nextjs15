@@ -10,8 +10,9 @@ const config: Config = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ["var(--font-inter)", "sans-serif"],
-				serif: ["var(--font-playfair)", "serif"],
+				sans: ["var(--font-jakarta)", "sans-serif"],
+				serif: ["var(--font-fraunces)", "serif"],
+				display: ["var(--font-fraunces)", "serif"],
 			},
 			colors: {
 				background: 'hsl(var(--background))',

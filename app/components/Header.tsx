@@ -31,18 +31,19 @@ export default function Header() {
         <header
             className={`fixed top-0 z-50 w-full transition-colors duration-300 ${headerBg}`}
         >
-            <div className="container flex h-16 items-center justify-between px-4 md:h-20 md:px-6">
-                <Link href="/" className="flex items-center gap-2 md:gap-3">
-                    <span className="flex items-center justify-center rounded-full bg-white p-1 shadow-md ring-1 ring-black/5">
+            <div className="container flex h-20 items-center justify-between px-4 md:h-24 md:px-6">
+                <Link href="/" className="flex items-center gap-3 md:gap-4">
+                    <span className="flex items-center justify-center rounded-full bg-white p-1.5 shadow-lg ring-1 ring-black/5">
                         <Image
                             src={logo}
                             alt="Afritouch Logo"
-                            width={80}
-                            height={80}
-                            className="h-10 w-10 object-contain md:h-14 md:w-14"
+                            width={120}
+                            height={120}
+                            priority
+                            className="h-14 w-14 object-contain md:h-20 md:w-20"
                         />
                     </span>
-                    <span className="text-lg font-bold font-serif tracking-tight text-white drop-shadow-lg sm:text-xl md:text-2xl">
+                    <span className="text-xl font-bold font-serif tracking-tight text-white drop-shadow-lg sm:text-2xl md:text-3xl">
                         Afritouch Caterers
                     </span>
                 </Link>
