@@ -41,6 +41,7 @@ const HomePage = () => {
               alt=""
               fill
               sizes="100vw"
+              loading="eager"
               className="hero-slide object-cover"
               style={{ animationDelay: `${i * 5}s` }}
             />

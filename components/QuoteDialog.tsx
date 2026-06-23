@@ -51,7 +51,35 @@ const QuoteDialog = ({ packageName, isOpen, onOpenChange, trigger }: QuoteDialog
 
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
-                throw new Error(data?.error || "Something went wrong. Please try again.");
+                // If email service is not configured, fallback to mailto:
+                if (data?.error === "EMAIL_NOT_CONFIGURED") {
+                    const subject = encodeURIComponent(`Quote Request: ${packageName || "General Inquiry"} — ${name}`);
+                    const body = encodeURIComponent(
+                        `Name: ${name}\n` +
+                        `Email: ${email}\n` +
+                        `Phone: ${phone}\n` +
+                        `WhatsApp: ${whatsapp || "N/A"}\n` +
+                        `Package: ${packageName || "General Inquiry"}\n` +
+                        `Guest Count: ${guestCount || "N/A"}\n` +
+                        `Event Date: ${eventDate || "N/A"}\n` +
+                        `Location: ${location || "N/A"}\n` +
+                        `Notes: ${notes || "N/A"}`
+                    );
+                    window.open(`mailto:info@afritouchcaterers.co.ke?subject=${subject}&body=${body}`, "_blank");
+                    setSuccess(true);
+                    // Reset the form fields after successful fallback.
+                    setName("");
+                    setPhone("");
+                    setWhatsapp("");
+                    setEmail("");
+                    setGuestCount("");
+                    setEventDate("");
+                    setLocation("");
+                    setNotes("");
+                    setIsSubmitting(false);
+                    return;
+                }
+                throw new Error(data?.error || data?.message || "Something went wrong. Please try again.");
             }
 
             setSuccess(true);

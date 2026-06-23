@@ -49,7 +49,8 @@ export async function POST(req: NextRequest) {
     if (!transport) {
         return NextResponse.json(
             {
-                error:
+                error: "EMAIL_NOT_CONFIGURED",
+                message:
                     "Email service is not configured. Please set SMTP_HOST, SMTP_USER and SMTP_PASS.",
             },
             { status: 503 },
