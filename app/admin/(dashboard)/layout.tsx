@@ -38,6 +38,12 @@ export default async function DashboardLayout({
                         <Link href="/admin" className="hover:underline">
                             Packages
                         </Link>
+                        <Link href="/admin/menu-items" className="hover:underline">
+                            Menu Items
+                        </Link>
+                        <Link href="/admin/quotes" className="hover:underline">
+                            Quotes
+                        </Link>
                         {isSuperadmin && !managesUsersExternally && (
                             <Link
                                 href="/admin/users"

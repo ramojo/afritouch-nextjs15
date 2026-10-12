@@ -5,10 +5,11 @@
  * dependency, so this schema can drive migrations via `drizzle-kit`.
  *
  * Tables:
- *   - packages  : Catering menu packages (Bronze, Silver, Gold, etc.)
- *   - users     : Admin / superadmin accounts for the dashboard
- *   - quotes    : Customer quote / inquiry submissions from the public site
- *   - sessions  : Optional persistent login sessions for local auth
+ *   - packages    : Catering menu packages (Bronze, Silver, Gold, etc.)
+ *   - menu_items  : Priced dish catalog used by the custom menu builder
+ *   - users       : Admin / superadmin accounts for the dashboard
+ *   - quotes      : Customer quote / inquiry submissions from the public site
+ *   - sessions    : Optional persistent login sessions for local auth
  */
 
 import { sql } from "drizzle-orm";
@@ -38,6 +39,16 @@ export const quoteStatus = pgEnum("quote_status", [
     "booked",
     "cancelled",
     "archived",
+]);
+
+export const quoteKind = pgEnum("quote_kind", ["package", "custom"]);
+
+export const menuItemCategory = pgEnum("menu_item_category", [
+    "starch",
+    "protein",
+    "vegetables",
+    "dessert",
+    "drinks",
 ]);
 
 /* -------------------------------------------------------------------------- */
@@ -81,6 +92,38 @@ export const packages = pgTable(
     },
     (t) => ({
         positionIdx: index("packages_position_idx").on(t.position),
+    }),
+);
+
+/* -------------------------------------------------------------------------- */
+/*  Menu items (priced catalog)                                               */
+/* -------------------------------------------------------------------------- */
+
+export const menuItems = pgTable(
+    "menu_items",
+    {
+        id: text("id").primaryKey(),
+        name: text("name").notNull(),
+        category: menuItemCategory("category").notNull(),
+        pricePerPerson: integer("price_per_person").notNull().default(0),
+        active: boolean("active").notNull().default(true),
+        needsCosting: boolean("needs_costing").notNull().default(false),
+        notes: text("notes").notNull().default(""),
+        createdAt: timestamp("created_at", { withTimezone: true })
+            .notNull()
+            .defaultNow(),
+        updatedAt: timestamp("updated_at", { withTimezone: true })
+            .notNull()
+            .defaultNow(),
+    },
+    (t) => ({
+        categoryIdx: index("menu_items_category_idx").on(t.category),
+        activeIdx: index("menu_items_active_idx").on(t.active),
+        costingIdx: index("menu_items_needs_costing_idx").on(t.needsCosting),
+        nameCategoryIdx: uniqueIndex("menu_items_category_name_idx").on(
+            t.category,
+            t.name,
+        ),
     }),
 );
 
@@ -143,6 +186,10 @@ export const quotes = pgTable(
         location: text("location").notNull(),
         notes: text("notes"),
 
+        kind: quoteKind("kind").notNull().default("package"),
+        lineItems: jsonb("line_items").notNull().default(sql`'[]'::jsonb`),
+        estimatedTotal: integer("estimated_total"),
+
         status: quoteStatus("status").notNull().default("new"),
         handledBy: uuid("handled_by").references(() => users.id, {
             onDelete: "set null",
@@ -196,6 +243,9 @@ export const sessions = pgTable(
 
 export type PackageRow = typeof packages.$inferSelect;
 export type NewPackageRow = typeof packages.$inferInsert;
+
+export type MenuItemRow = typeof menuItems.$inferSelect;
+export type NewMenuItemRow = typeof menuItems.$inferInsert;
 
 export type UserRow = typeof users.$inferSelect;
 export type NewUserRow = typeof users.$inferInsert;
