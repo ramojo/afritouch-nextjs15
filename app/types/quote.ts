@@ -59,10 +59,19 @@ export interface QuoteInput {
         name: string;
         category: MenuCategory;
         custom?: boolean;
+        /** Price per person, when known at submission time. */
+        unitPrice?: number | null;
+        /** True when the kitchen still needs to price the item. */
+        pendingCosting?: boolean;
     }>;
 }
 
 export type QuotePatch = {
     status?: QuoteStatus;
-    lineItemPrices?: Array<{ itemId: string; unitPrice: number }>;
+    lineItemPrices?: Array<{
+        itemId?: string | null;
+        /** Needed for ad-hoc dishes that have no catalog id. */
+        name?: string;
+        unitPrice: number;
+    }>;
 };

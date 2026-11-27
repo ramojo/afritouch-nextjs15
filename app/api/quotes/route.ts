@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listQuotes } from "@/lib/quotes";
 import { QUOTE_STATUSES } from "@/app/types/quote";
+import { getSession } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
+    if (!(await getSession())) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") ?? undefined;
     const limitParam = searchParams.get("limit");

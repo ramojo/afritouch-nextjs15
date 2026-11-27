@@ -1,31 +1,29 @@
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import type { Config } from "drizzle-kit";
 import * as dotenv from "dotenv";
 
-// drizzle-kit runs outside Next.js, so .env.local isn't auto-loaded.
-// Load it (and .env) manually without adding a dotenv dependency.
-// for (const file of [".env", ".env.local"]) {
-//     const p = resolve(process.cwd(), file);
-//     if (!existsSync(p)) continue;
-//     for (const raw of readFileSync(p, "utf8").split(/\r?\n/)) {
-//         const line = raw.trim();
-//         if (!line || line.startsWith("#")) continue;
-//         const eq = line.indexOf("=");
-//         if (eq === -1) continue;
-//         const key = line.slice(0, eq).trim();
-//         let val = line.slice(eq + 1).trim();
-//         if (
-//             (val.startsWith('"') && val.endsWith('"')) ||
-//             (val.startsWith("'") && val.endsWith("'"))
-//         ) {
-//             val = val.slice(1, -1);
-//         }
-//         if (process.env[key] === undefined) process.env[key] = val;
-//     }
-// }
+// drizzle-kit may preload .env itself, so explicitly apply .env.local last to
+// match Next.js precedence and target the database the app actually uses.
+dotenv.config({ path: ".env" });
+dotenv.config({ path: ".env.local", override: true });
 
-dotenv.config();
+// Local Postgres usually has no SSL, even when .env sets DATABASE_SSL for a
+// hosted database. Decide from the effective URL, not just the flag.
+function resolveSsl(url: string | undefined): boolean {
+    if (!url) return false;
+    try {
+        const parsed = new URL(url);
+        if (["localhost", "127.0.0.1", "::1"].includes(parsed.hostname)) {
+            return false;
+        }
+        const mode = parsed.searchParams.get("sslmode");
+        if (mode === "require" || mode === "verify-ca" || mode === "verify-full") {
+            return true;
+        }
+    } catch {
+        // Fall through to the explicit flag.
+    }
+    return process.env.DATABASE_SSL === "true";
+}
 
 export default {
     schema: "./db/schema.ts",
@@ -33,7 +31,7 @@ export default {
     dialect: "postgresql",
     dbCredentials: {
         url: process.env.DATABASE_URL!,
-        ssl: process.env.DATABASE_SSL === "true",
+        ssl: resolveSsl(process.env.DATABASE_URL),
     },
     strict: true,
     verbose: true,

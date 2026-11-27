@@ -544,9 +544,9 @@ const pgQuoteStore: QuoteStore = {
             itemId: li.itemId ?? null,
             name: li.name,
             category: li.category,
-            unitPrice: null,
+            unitPrice: li.unitPrice ?? null,
             custom: li.custom ?? false,
-            pendingCosting: li.custom ?? false,
+            pendingCosting: li.pendingCosting ?? li.custom ?? false,
         }));
         const estimatedTotal = estimatedQuoteTotal(input.guestCount, lineItems);
         const { rows } = await getPool().query<QuoteRow>(
@@ -583,8 +583,18 @@ const pgQuoteStore: QuoteStore = {
             const existing = await pgQuoteStore.get(id);
             if (existing) {
                 const updated = existing.lineItems.map((li) => {
-                    const priceUpdate = patch.lineItemPrices?.find((p) => p.itemId === li.itemId);
-                    if (priceUpdate) return { ...li, unitPrice: priceUpdate.unitPrice, pendingCosting: false };
+                    const priceUpdate = patch.lineItemPrices?.find(
+                        (p) =>
+                            (p.itemId != null && p.itemId === li.itemId) ||
+                            (p.itemId == null && p.name === li.name),
+                    );
+                    if (priceUpdate) {
+                        return {
+                            ...li,
+                            unitPrice: priceUpdate.unitPrice,
+                            pendingCosting: priceUpdate.unitPrice <= 0,
+                        };
+                    }
                     return li;
                 });
                 const newTotal = estimatedQuoteTotal(existing.guestCount, updated);

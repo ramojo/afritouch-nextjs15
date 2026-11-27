@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTransport, QUOTE_TO, QUOTE_FROM } from "@/lib/mailer";
 import { createQuote } from "@/lib/quotes";
+import { getMenuItem } from "@/lib/menu-items";
+import { estimatedQuoteTotal } from "@/lib/menu-catalog";
 import { QuoteInput, QuoteLineItem } from "@/app/types/quote";
-import { MenuCategory } from "@/app/types/menu";
+import { MENU_CATEGORIES, MenuCategory } from "@/app/types/menu";
 
 type QuotePayload = {
     name?: string;
@@ -58,20 +60,62 @@ export async function POST(req: NextRequest) {
     }
 
     const guestCount = Number(body.guestCount ?? 0);
+    if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 10000) {
+        return NextResponse.json(
+            { error: "Guest count must be between 1 and 10,000." },
+            { status: 400 },
+        );
+    }
+    const kind = body.kind === "custom" ? "custom" : "package";
+    const rawLineItems = body.lineItems ?? [];
+    if (rawLineItems.length > 100) {
+        return NextResponse.json(
+            { error: "A menu can contain at most 100 items." },
+            { status: 400 },
+        );
+    }
+
+    // Prices always come from the admin-managed catalog, never from the client.
+    // Unknown / ad-hoc dishes are saved with no price and flagged for costing.
+    const lineItems: QuoteInput["lineItems"] = [];
+    for (const li of rawLineItems) {
+        const itemName = li.name?.trim();
+        if (!itemName) continue;
+        if (!MENU_CATEGORIES.includes(li.category as MenuCategory)) {
+            return NextResponse.json(
+                { error: `Invalid category for "${itemName}".` },
+                { status: 400 },
+            );
+        }
+
+        let catalogItem = null;
+        if (li.itemId) {
+            try {
+                catalogItem = await getMenuItem(li.itemId);
+            } catch (err) {
+                console.error("Menu item lookup failed:", err);
+            }
+        }
+
+        const priced = !!catalogItem && !catalogItem.needsCosting && catalogItem.pricePerPerson > 0;
+        lineItems.push({
+            itemId: catalogItem?.id ?? null,
+            name: catalogItem?.name ?? itemName,
+            category: (catalogItem?.category ?? li.category) as MenuCategory,
+            custom: !catalogItem,
+            unitPrice: priced ? catalogItem!.pricePerPerson : null,
+            pendingCosting: !priced,
+        });
+    }
 
     // --- Save to database (source of truth) ---
     let savedId: string | undefined;
+    let savedTotal: number | null = null;
     try {
-        const lineItems: QuoteInput["lineItems"] = (body.lineItems ?? []).map((li) => ({
-            itemId: li.itemId ?? null,
-            name: li.name,
-            category: li.category as MenuCategory,
-            custom: li.custom ?? false,
-        }));
         const saved = await createQuote({
-            kind: body.kind ?? "package",
+            kind,
             packageId: body.packageId ?? null,
-            packageName: body.packageName?.trim() ?? null,
+            packageName: body.packageName?.trim() || (kind === "custom" ? "Custom Menu" : null),
             name,
             email,
             phone,
@@ -83,6 +127,7 @@ export async function POST(req: NextRequest) {
             lineItems,
         });
         savedId = saved.id;
+        savedTotal = saved.estimatedTotal;
     } catch (dbErr) {
         console.error("Quote DB save failed:", dbErr);
         // Non-fatal: proceed to email even if DB write fails
@@ -104,14 +149,16 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const lineItemsForEmail: QuoteLineItem[] = (body.lineItems ?? []).map((li) => ({
+    const lineItemsForEmail: QuoteLineItem[] = lineItems.map((li) => ({
         itemId: li.itemId ?? null,
         name: li.name,
-        category: li.category as MenuCategory,
+        category: li.category,
         unitPrice: li.unitPrice ?? null,
         custom: li.custom ?? false,
-        pendingCosting: li.custom ?? false,
+        pendingCosting: li.pendingCosting ?? false,
     }));
+    const emailTotal =
+        savedTotal ?? estimatedQuoteTotal(guestCount, lineItemsForEmail);
 
     const rows: [string, string][] = [
         ["Name", name],
@@ -131,10 +178,16 @@ export async function POST(req: NextRequest) {
             const price = li.pendingCosting
                 ? "Awaiting price"
                 : li.unitPrice != null
-                  ? `KES ${li.unitPrice} × ${guestCount}`
+                  ? `KES ${li.unitPrice.toLocaleString("en-KE")} × ${guestCount}`
                   : "—";
             rows.push([`  ${li.name}`, price]);
         });
+        rows.push([
+            "Estimated total",
+            emailTotal != null
+                ? `KES ${emailTotal.toLocaleString("en-KE")}`
+                : "Awaiting costing",
+        ]);
     }
 
     const text = rows.map(([k, v]) => `${k}: ${v}`).join("\n");

@@ -8,6 +8,7 @@ import {
 import { listPackages } from "@/lib/packages";
 import { catalogFromPackages } from "@/lib/menu-catalog";
 import { MenuItemInput, MENU_CATEGORIES } from "@/app/types/menu";
+import { getSession } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -29,6 +30,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    if (!(await getSession())) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { searchParams } = new URL(req.url);
     const action = searchParams.get("action");
 
@@ -56,6 +60,15 @@ export async function POST(req: NextRequest) {
     }
     if (!body.category || !MENU_CATEGORIES.includes(body.category as never)) {
         return NextResponse.json({ error: "Valid category is required" }, { status: 400 });
+    }
+    if (
+        body.pricePerPerson !== undefined &&
+        (!Number.isInteger(body.pricePerPerson) || body.pricePerPerson < 0)
+    ) {
+        return NextResponse.json(
+            { error: "Price per person must be a whole positive number" },
+            { status: 400 },
+        );
     }
     try {
         const item = await createMenuItem(body as MenuItemInput);
