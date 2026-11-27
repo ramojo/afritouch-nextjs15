@@ -41,13 +41,23 @@ function resolveDatabaseSsl(databaseUrl: string): boolean {
 
 const databaseUrl = process.env.DATABASE_URL || "";
 
+function resolveStorageDriver(): StorageDriver {
+    // Vercel and other serverless hosts have a read-only filesystem, so file
+    // storage can only work locally. When a database URL is available in
+    // production, always use Postgres even if STORAGE_DRIVER is stale/unset.
+    if (process.env.NODE_ENV === "production" && databaseUrl) {
+        return "postgres";
+    }
+    return pick<StorageDriver>(
+        process.env.STORAGE_DRIVER,
+        ["file", "postgres"],
+        databaseUrl ? "postgres" : "file",
+    );
+}
+
 export const config = {
     storage: {
-        driver: pick<StorageDriver>(
-            process.env.STORAGE_DRIVER,
-            ["file", "postgres"],
-            "file",
-        ),
+        driver: resolveStorageDriver(),
         databaseUrl,
         databaseSsl: resolveDatabaseSsl(databaseUrl),
     },

@@ -34,6 +34,35 @@ const escapeHtml = (s: string) =>
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 
+/** DB writes are critical, so retry once before declaring the save failed. */
+async function persistQuoteWithRetry(input: QuoteInput) {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            return await createQuote(input);
+        } catch (err) {
+            lastError = err;
+            console.error(`Quote DB save failed (attempt ${attempt}/2):`, err);
+            if (attempt < 2) {
+                await new Promise((resolve) => setTimeout(resolve, 250));
+            }
+        }
+    }
+    throw lastError;
+}
+
+function quoteSaveFailedResponse() {
+    return NextResponse.json(
+        {
+            ok: false,
+            error: "QUOTE_SAVE_FAILED",
+            warning:
+                "Your request could not be recorded in the database. Please contact us directly so we can assist you.",
+        },
+        { status: 500 },
+    );
+}
+
 export async function POST(req: NextRequest) {
     let body: QuotePayload;
     try {
@@ -108,11 +137,12 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    // --- Save to database (source of truth) ---
+    // --- Save to database first: this is the durable source of truth. ---
     let savedId: string | undefined;
     let savedTotal: number | null = null;
+    let dbFailed = false;
     try {
-        const saved = await createQuote({
+        const saved = await persistQuoteWithRetry({
             kind,
             packageId: body.packageId ?? null,
             packageName: body.packageName?.trim() || (kind === "custom" ? "Custom Menu" : null),
@@ -129,15 +159,16 @@ export async function POST(req: NextRequest) {
         savedId = saved.id;
         savedTotal = saved.estimatedTotal;
     } catch (dbErr) {
-        console.error("Quote DB save failed:", dbErr);
-        // Non-fatal: proceed to email even if DB write fails
+        dbFailed = true;
+        console.error("Quote could not be persisted after retry:", dbErr);
     }
 
     const pkg = body.packageName?.trim() || "Custom Menu";
     const transport = getTransport();
 
-    // --- Email notification ---
+    // --- Email notification (second source of truth) ---
     if (!transport) {
+        if (dbFailed) return quoteSaveFailedResponse();
         return NextResponse.json(
             {
                 error: "EMAIL_NOT_CONFIGURED",
@@ -218,17 +249,25 @@ export async function POST(req: NextRequest) {
             text,
             html,
         });
-        return NextResponse.json({ ok: true, savedId });
+
+        // The email went out, but without a DB row we haven't met the
+        // two-sources-of-truth requirement. Surface that instead of reporting
+        // a false success to the customer.
+        if (dbFailed) return quoteSaveFailedResponse();
+        return NextResponse.json({ ok: true, savedId, emailSent: true });
     } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to send";
         console.error("Quote email failed:", message);
+        if (dbFailed) return quoteSaveFailedResponse();
         return NextResponse.json(
             {
-                ok: !!savedId,
+                ok: true,
                 savedId,
-                warning: "Your inquiry was recorded but the confirmation email could not be sent.",
+                emailSent: false,
+                warning:
+                    "Your inquiry was saved, but the notification email could not be sent.",
             },
-            { status: savedId ? 200 : 502 },
+            { status: 200 },
         );
     }
 }
