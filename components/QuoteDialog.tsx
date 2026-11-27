@@ -127,7 +127,12 @@ const QuoteDialog = ({
                     setIsSubmitting(false);
                     return;
                 }
-                throw new Error(data?.error || data?.message || "Something went wrong. Please try again.");
+                throw new Error(
+                    data?.warning ||
+                        data?.message ||
+                        data?.error ||
+                        "Something went wrong. Please try again.",
+                );
             }
 
             setSuccess(true);
