@@ -10,6 +10,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
 } from "@/components/ui/navigation-menu"
+import AdminMenu from "@/app/components/AdminMenu";
 
 const links = [
     { href: "/", label: "Home" },
@@ -42,6 +43,9 @@ export default function Nav() {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                     ))}
+                    <NavigationMenuItem>
+                        <AdminMenu />
+                    </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>
 
@@ -59,7 +63,7 @@ export default function Nav() {
             {/* Mobile menu panel */}
             <div
                 className={`absolute left-0 right-0 top-full origin-top overflow-hidden bg-primary/95 backdrop-blur-sm shadow-md transition-all duration-300 md:hidden ${
-                    open ? "max-h-80 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+                    open ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
                 }`}
             >
                 <nav className="flex flex-col px-4 py-2">
@@ -73,6 +77,9 @@ export default function Nav() {
                             {link.label}
                         </Link>
                     ))}
+                    <div className="mt-1 border-t border-white/15 pt-1">
+                        <AdminMenu variant="mobile" onNavigate={() => setOpen(false)} />
+                    </div>
                 </nav>
             </div>
         </>

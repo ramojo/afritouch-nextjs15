@@ -13,6 +13,34 @@ function pick<T extends string>(value: string | undefined, allowed: T[], fallbac
     return fallback;
 }
 
+/**
+ * Local Postgres servers normally don't accept SSL, while hosted providers
+ * (e.g. Neon) do. `.env` can set DATABASE_SSL=true for a hosted URL while
+ * `.env.local` overrides DATABASE_URL with a local one, so resolve SSL from
+ * the effective URL rather than blindly trusting the flag.
+ */
+function resolveDatabaseSsl(databaseUrl: string): boolean {
+    let host = "";
+    let sslMode: string | null = null;
+    try {
+        const url = new URL(databaseUrl);
+        host = url.hostname;
+        sslMode = url.searchParams.get("sslmode");
+    } catch {
+        // Fall through to the explicit flag below.
+    }
+
+    if (host === "localhost" || host === "127.0.0.1" || host === "::1") {
+        return false;
+    }
+    if (sslMode === "require" || sslMode === "verify-ca" || sslMode === "verify-full") {
+        return true;
+    }
+    return process.env.DATABASE_SSL === "true";
+}
+
+const databaseUrl = process.env.DATABASE_URL || "";
+
 export const config = {
     storage: {
         driver: pick<StorageDriver>(
@@ -20,8 +48,8 @@ export const config = {
             ["file", "postgres"],
             "file",
         ),
-        databaseUrl: process.env.DATABASE_URL || "",
-        databaseSsl: process.env.DATABASE_SSL === "true",
+        databaseUrl,
+        databaseSsl: resolveDatabaseSsl(databaseUrl),
     },
     auth: {
         provider: pick<AuthProvider>(

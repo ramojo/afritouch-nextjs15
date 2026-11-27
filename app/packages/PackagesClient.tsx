@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -217,15 +218,13 @@ export default function PackagesClient({ packages }: { packages: Package[] }) {
                 </Tabs>
             </div>
 
-            <QuoteDialog
-                packageName="Custom Menu"
-                trigger={
-                    <button className="fixed bottom-8 right-8 bg-secondary hover:bg-secondary/90 text-primary px-6 py-4 rounded-full font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all flex items-center gap-2 z-40 animate-in slide-in-from-right duration-500">
-                        <ChefHat className="w-5 h-5" />
-                        Request a Custom Menu
-                    </button>
-                }
-            />
+            <Link
+                href="/custom-menu"
+                className="fixed bottom-8 right-8 bg-secondary hover:bg-secondary/90 text-primary px-6 py-4 rounded-full font-bold shadow-2xl hover:scale-105 transition-all flex items-center gap-2 z-40 animate-in slide-in-from-right duration-500"
+            >
+                <ChefHat className="w-5 h-5" />
+                Build a Custom Menu
+            </Link>
         </div>
     );
 }

@@ -38,8 +38,15 @@ async function localProxy(req: NextRequest): Promise<NextResponse | undefined> {
 
     const isPackageWrite =
         pathname.startsWith("/api/packages") && req.method !== "GET";
+    const isMenuWrite =
+        pathname.startsWith("/api/menu-items") && req.method !== "GET";
     const isUpload = pathname.startsWith("/api/upload");
-    if ((isPackageWrite || isUpload) && !session) {
+    if ((isPackageWrite || isMenuWrite || isUpload) && !session) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Quotes contain customer contact details.
+    if (pathname.startsWith("/api/quotes") && !session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -65,13 +72,19 @@ async function localProxy(req: NextRequest): Promise<NextResponse | undefined> {
 const isProtectedRoute = createRouteMatcher([
     "/admin(.*)",
     "/api/packages/:path*",
+    "/api/menu-items/:path*",
+    "/api/quotes/:path*",
     "/api/upload/:path*",
     "/api/admin/profile/:path*",
     "/api/users/:path*",
 ]);
 
 const clerkProxy = clerkMiddleware(async (auth, req) => {
-    if (!isProtectedRoute(req)) return;
+    // The catalog is public so visitors can build a custom menu.
+    const isPublicMenuRead =
+        req.nextUrl.pathname.startsWith("/api/menu-items") &&
+        req.method === "GET";
+    if (isPublicMenuRead || !isProtectedRoute(req)) return;
     const { userId } = await auth();
     if (!userId) {
         const url = req.nextUrl.clone();
@@ -97,6 +110,8 @@ export const config = {
     matcher: [
         "/admin/:path*",
         "/api/packages/:path*",
+        "/api/menu-items/:path*",
+        "/api/quotes/:path*",
         "/api/upload/:path*",
         "/api/users/:path*",
         "/api/admin/:path*",

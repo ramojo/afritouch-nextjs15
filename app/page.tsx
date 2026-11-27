@@ -33,6 +33,7 @@ const HomePage = () => {
             priority
             sizes="100vw"
             className="object-cover"
+            loading="eager"
           />
           {heroImages.map((src, i) => (
             <Image

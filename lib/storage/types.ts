@@ -1,4 +1,6 @@
 import { Package, PackageInput } from "@/app/types/package";
+import { MenuItem, MenuItemInput, MenuItemPatch } from "@/app/types/menu";
+import { Quote, QuoteInput, QuotePatch } from "@/app/types/quote";
 import { Role, User, UserPublic } from "@/lib/users-types";
 
 export interface PackageStore {
@@ -7,6 +9,29 @@ export interface PackageStore {
     create(input: PackageInput): Promise<Package>;
     update(id: string, input: PackageInput): Promise<Package | null>;
     delete(id: string): Promise<boolean>;
+}
+
+export interface MenuItemStore {
+    list(opts?: {
+        category?: string;
+        active?: boolean;
+        needsCosting?: boolean;
+    }): Promise<MenuItem[]>;
+    get(id: string): Promise<MenuItem | null>;
+    create(input: MenuItemInput): Promise<MenuItem>;
+    update(id: string, patch: MenuItemPatch): Promise<MenuItem | null>;
+    delete(id: string): Promise<boolean>;
+    /** Bulk-insert items; skips duplicates (same category+name). Returns count inserted. */
+    bulkCreate(items: MenuItemInput[]): Promise<number>;
+    /** Delete all items. Returns count deleted. */
+    clearAll(): Promise<number>;
+}
+
+export interface QuoteStore {
+    list(opts?: { status?: string; limit?: number; offset?: number }): Promise<Quote[]>;
+    get(id: string): Promise<Quote | null>;
+    create(input: QuoteInput): Promise<Quote>;
+    update(id: string, patch: QuotePatch): Promise<Quote | null>;
 }
 
 export interface UserStore {
@@ -30,5 +55,7 @@ export interface UserStore {
 
 export interface Storage {
     packages: PackageStore;
+    menuItems: MenuItemStore;
+    quotes: QuoteStore;
     users: UserStore;
 }
