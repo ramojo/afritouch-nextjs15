@@ -307,25 +307,25 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                 <div className="overflow-x-auto rounded-lg border bg-card">
                     <table className="w-full min-w-[1040px] table-fixed text-sm">
                         <colgroup>
-                            <col className="w-[28%]" />
+                            <col className="w-[30%]" />
+                            <col className="w-[10%]" />
                             <col className="w-[9%]" />
-                            <col className="w-[6%]" />
                             <col className="w-[8%]" />
-                            <col className="w-[7%]" />
-                            <col className="w-[9%]" />
-                            <col className="w-[16%]" />
+                            <col className="w-[5%]" />
+                            <col className="w-[5%]" />
                             <col className="w-[17%]" />
+                            <col className="w-[16%]" />
                         </colgroup>
                         <thead className="bg-muted/50 text-left">
                             <tr>
-                                <th className="px-4 py-3 font-medium">Dish</th>
-                                <th className="px-4 py-3 font-medium">Category</th>
-                                <th className="px-4 py-3 font-medium">Icon</th>
-                                <th className="px-4 py-3 font-medium">Cost / person</th>
-                                <th className="px-4 py-3 font-medium">Available</th>
-                                <th className="px-4 py-3 font-medium">Needs costing</th>
-                                <th className="px-4 py-3 font-medium">Notes</th>
-                                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                                <th className="px-3 py-3 font-medium">Dish</th>
+                                <th className="px-3 py-3 font-medium">Category</th>
+                                <th className="px-3 py-3 text-center font-medium">Icon</th>
+                                <th className="px-3 py-3 font-medium">Cost / person</th>
+                                <th className="px-3 py-3 text-center font-medium">Available</th>
+                                <th className="px-3 py-3 text-center font-medium">Needs costing</th>
+                                <th className="px-3 py-3 font-medium">Notes</th>
+                                <th className="px-3 py-3 text-right font-medium">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -333,7 +333,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                 const d = draft(item.id);
                                 return (
                                     <tr key={item.id} className="border-t align-middle">
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2">
                                             <input
                                                 value={d.name}
                                                 onChange={(e) => change(item.id, { name: e.target.value })}
@@ -341,7 +341,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 aria-label={`Name for ${item.name}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2">
                                             <select
                                                 value={d.category}
                                                 onChange={(e) =>
@@ -349,7 +349,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                         category: e.target.value as MenuCategory,
                                                     })
                                                 }
-                                                className="rounded-md border bg-background px-2 py-1.5 text-sm"
+                                                className="w-full min-w-0 rounded-md border bg-background px-2 py-1.5 text-sm"
                                                 aria-label={`Category for ${item.name}`}
                                             >
                                                 {MENU_CATEGORIES.map((c) => (
@@ -357,7 +357,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 ))}
                                             </select>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2 text-center">
                                             <MenuIconPicker
                                                 item={d}
                                                 value={d.iconKey}
@@ -370,7 +370,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 compact
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2">
                                             <input
                                                 type="number"
                                                 min="0"
@@ -385,7 +385,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 aria-label={`Cost per person for ${item.name}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2 text-center">
                                             <input
                                                 type="checkbox"
                                                 checked={d.active}
@@ -394,18 +394,18 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 aria-label={`Available: ${item.name}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2 text-center">
                                             <input
                                                 type="checkbox"
                                                 checked={d.needsCosting}
                                                 onChange={(e) =>
                                                     change(item.id, { needsCosting: e.target.checked })
                                                 }
-                                                className="h-4 w-4"
+                                                className="h-4 w-4 accent-primary"
                                                 aria-label={`Needs costing: ${item.name}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2">
                                             <input
                                                 value={d.notes}
                                                 onChange={(e) => change(item.id, { notes: e.target.value })}
@@ -414,7 +414,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                 aria-label={`Notes for ${item.name}`}
                                             />
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="px-3 py-2">
                                             <div className="flex items-center justify-end gap-1 whitespace-nowrap">
                                                 <button
                                                     type="button"
