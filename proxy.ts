@@ -1,7 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { config as appConfig } from "@/lib/config";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+
+/** Segment-boundary prefixes. Replaces Clerk's deprecated createRouteMatcher. */
+const PROTECTED_PREFIXES = [
+    "/admin",
+    "/api/packages",
+    "/api/menu-items",
+    "/api/quotes",
+    "/api/upload",
+    "/api/admin/profile",
+    "/api/users",
+] as const;
+
+function isProtectedPath(pathname: string): boolean {
+    return PROTECTED_PREFIXES.some(
+        (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
+}
 
 // ---------------------------------------------------------------------------
 // Local-auth proxy
@@ -69,22 +86,12 @@ async function localProxy(req: NextRequest): Promise<NextResponse | undefined> {
 // ---------------------------------------------------------------------------
 // Clerk-auth proxy
 // ---------------------------------------------------------------------------
-const isProtectedRoute = createRouteMatcher([
-    "/admin(.*)",
-    "/api/packages/:path*",
-    "/api/menu-items/:path*",
-    "/api/quotes/:path*",
-    "/api/upload/:path*",
-    "/api/admin/profile/:path*",
-    "/api/users/:path*",
-]);
-
 const clerkProxy = clerkMiddleware(async (auth, req) => {
+    const { pathname } = req.nextUrl;
     // The catalog is public so visitors can build a custom menu.
     const isPublicMenuRead =
-        req.nextUrl.pathname.startsWith("/api/menu-items") &&
-        req.method === "GET";
-    if (isPublicMenuRead || !isProtectedRoute(req)) return;
+        pathname.startsWith("/api/menu-items") && req.method === "GET";
+    if (isPublicMenuRead || !isProtectedPath(pathname)) return;
     const { userId } = await auth();
     if (!userId) {
         const url = req.nextUrl.clone();
