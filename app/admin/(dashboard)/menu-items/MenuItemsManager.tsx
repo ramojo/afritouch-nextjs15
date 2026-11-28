@@ -318,7 +318,17 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                 </div>
             ) : (
                 <div className="overflow-x-auto rounded-lg border bg-card">
-                    <table className="w-full min-w-[900px] text-sm">
+                    <table className="w-full min-w-[1280px] table-fixed text-sm">
+                        <colgroup>
+                            <col className="w-[23%]" />
+                            <col className="w-[9%]" />
+                            <col className="w-[18%]" />
+                            <col className="w-[8%]" />
+                            <col className="w-[7%]" />
+                            <col className="w-[9%]" />
+                            <col className="w-[12%]" />
+                            <col className="w-[14%]" />
+                        </colgroup>
                         <thead className="bg-muted/50 text-left">
                             <tr>
                                 <th className="px-4 py-3 font-medium">Dish</th>
@@ -335,12 +345,12 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                             {items.map((item) => {
                                 const d = draft(item.id);
                                 return (
-                                    <tr key={item.id} className="border-t">
+                                    <tr key={item.id} className="border-t align-middle">
                                         <td className="px-4 py-2">
                                             <input
                                                 value={d.name}
                                                 onChange={(e) => change(item.id, { name: e.target.value })}
-                                                className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+                                                className="w-full min-w-0 rounded-md border bg-background px-2 py-1.5 text-sm"
                                                 aria-label={`Name for ${item.name}`}
                                             />
                                         </td>
@@ -394,7 +404,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                         pricePerPerson: Number(e.target.value) || 0,
                                                     })
                                                 }
-                                                className="w-28 rounded-md border bg-background px-2 py-1.5 text-sm"
+                                                className="w-full min-w-0 rounded-md border bg-background px-2 py-1.5 text-sm"
                                                 aria-label={`Cost per person for ${item.name}`}
                                             />
                                         </td>
@@ -422,7 +432,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                             <input
                                                 value={d.notes}
                                                 onChange={(e) => change(item.id, { notes: e.target.value })}
-                                                className="w-full min-w-[120px] rounded-md border bg-background px-2 py-1.5 text-sm"
+                                                className="w-full min-w-0 rounded-md border bg-background px-2 py-1.5 text-sm"
                                                 placeholder="—"
                                                 aria-label={`Notes for ${item.name}`}
                                             />
