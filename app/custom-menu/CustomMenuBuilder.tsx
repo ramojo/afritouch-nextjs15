@@ -26,36 +26,11 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-    IconApple,
-    IconBottle,
-    IconBowl,
-    IconBowlChopsticks,
-    IconBread,
-    IconBubbleTea,
-    IconCake,
-    IconCherry,
-    IconChocolate,
-    IconCoffee,
-    IconCup,
-    IconDroplets,
-    IconEggFried,
-    IconFish,
-    IconGrape,
-    IconGrillFork,
-    IconIceCream,
-    IconLeaf,
-    IconMeat,
-    IconSalad,
-    IconSoup,
-    type TablerIcon,
-} from "@tabler/icons-react";
 import { Check, GripVertical, Info, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import {
     CATEGORY_LABELS,
     MENU_CATEGORIES,
-    MenuCategory,
     MenuItem,
 } from "@/app/types/menu";
 import { QuoteLineItem } from "@/app/types/quote";
@@ -65,105 +40,8 @@ import {
     displayCost,
     isPriced,
 } from "@/lib/custom-menu";
-import { formatKes, normalizeItemName } from "@/lib/utils";
-
-type MenuIconComponent = TablerIcon;
-
-// Tabler has dedicated food icons. Rice/Pilau dishes use bowls, never the
-// glass or wine-glass icons, so the icon matches the actual dish.
-const CATEGORY_ICONS: Record<MenuCategory, MenuIconComponent> = {
-    starch: IconBowl,
-    protein: IconMeat,
-    vegetables: IconSalad,
-    dessert: IconCake,
-    drinks: IconBottle,
-};
-
-// Exact dish names imported from packages.json. Keyword rules below are only a
-// fallback for dishes added manually by an admin.
-const MENU_ICON_BY_NAME: Record<string, MenuIconComponent> = {
-    pilau: IconBowl,
-    "swahili pilau": IconBowl,
-    "vegetable rice": IconBowl,
-    "rice garnished with vegetables": IconBowl,
-    "swahili rice": IconBowl,
-    "vegetable stir-fried rice": IconBowlChopsticks,
-    "chinese stir-fried rice": IconBowlChopsticks,
-    chapati: IconBread,
-    "white and brown chapati": IconBread,
-    "soft layered chapati": IconBread,
-    "a choice of mukimo, mashed potatoes or parsley potatoes": IconBowl,
-    "mukimo or parsley potatoes": IconBowl,
-    "roast potatoes/wedges": IconBowl,
-    "extra starch option": IconBowl,
-    "extra starch options": IconBowl,
-    "beef stew": IconSoup,
-    "beef wet fry/stew": IconSoup,
-    chicken: IconMeat,
-    "glazed chicken": IconMeat,
-    "goat fry, pork or fish": IconGrillFork,
-    "mbuzi wet fry": IconMeat,
-    "pan seared fish fillet": IconFish,
-    "vegetable salad or cooked vegetables": IconSalad,
-    "stir fried vegetables": IconSalad,
-    "vegetarian option": IconSalad,
-    "assortment of stir fried vegetables": IconSalad,
-    "creamed spinach": IconLeaf,
-    "traditional vegetables": IconLeaf,
-    "fruit in season": IconApple,
-    "fruit cuts": IconCherry,
-    "fruit cuts or ice cream": IconIceCream,
-    "assorted fruit platter": IconGrape,
-    "ice cream": IconIceCream,
-    "cake slices": IconCake,
-    soda: IconCup,
-    water: IconBottle,
-    "mineral water": IconDroplets,
-    "fresh juice": IconBubbleTea,
-    "tea/coffee": IconCoffee,
-};
-
-const MENU_ICON_RULES: Array<{ test: RegExp; icon: MenuIconComponent }> = [
-    { test: /ice\s*cream|gelato|milkshake/i, icon: IconIceCream },
-    { test: /cake|cookie|biscuit/i, icon: IconCake },
-    { test: /chocolate/i, icon: IconChocolate },
-    { test: /fruit platter|grape|berry/i, icon: IconGrape },
-    { test: /fruit cuts|citrus|orange|lemon/i, icon: IconCherry },
-    { test: /fruit/i, icon: IconApple },
-    { test: /tea|coffee/i, icon: IconCoffee },
-    { test: /juice|smoothie/i, icon: IconBubbleTea },
-    { test: /soda|fizzy|carbonated/i, icon: IconCup },
-    { test: /mineral water/i, icon: IconDroplets },
-    { test: /water/i, icon: IconBottle },
-    { test: /fish|seafood/i, icon: IconFish },
-    { test: /egg/i, icon: IconEggFried },
-    { test: /soup|stew/i, icon: IconSoup },
-    { test: /beef|goat|pork|mbuzi|chicken|fry|roast|meat/i, icon: IconMeat },
-    { test: /chapati|flatbread|bread|naan/i, icon: IconBread },
-    { test: /rice|pilau|starch|potato|mukimo|wedge/i, icon: IconBowl },
-    { test: /spinach|greens|leaf|vegetarian/i, icon: IconLeaf },
-    { test: /salad|vegetable/i, icon: IconSalad },
-];
-
-function menuIconFor(item: MenuItem): MenuIconComponent {
-    return (
-        MENU_ICON_BY_NAME[normalizeItemName(item.name)] ??
-        MENU_ICON_RULES.find((rule) => rule.test.test(item.name))?.icon ??
-        CATEGORY_ICONS[item.category]
-    );
-}
-
-function MenuIcon({ item, className }: { item: MenuItem; className?: string }) {
-    const Icon = menuIconFor(item);
-    return (
-        <Icon
-            className={className}
-            size="1em"
-            stroke={1.6}
-            aria-hidden="true"
-        />
-    );
-}
+import { CATEGORY_ICONS, MenuIcon } from "@/lib/menu-icons";
+import { formatKes } from "@/lib/utils";
 
 // Only the "Your menu" sidebar is a droppable. Using pointerWithin prevents a
 // large surrounding catalogue from winning collision detection, while

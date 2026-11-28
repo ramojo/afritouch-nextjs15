@@ -26,6 +26,7 @@ export function catalogFromPackages(packages: Package[]): MenuItemInput[] {
                         active: true,
                         needsCosting: false,
                         notes: "",
+                        iconKey: "auto",
                     });
                 }
             }

@@ -2,7 +2,13 @@ import crypto from "crypto";
 import { Pool } from "pg";
 import { config } from "@/lib/config";
 import { Package, PackageInput } from "@/app/types/package";
-import { MenuItem, MenuItemInput, MenuItemPatch, MENU_CATEGORIES } from "@/app/types/menu";
+import {
+    MenuItem,
+    MenuItemInput,
+    MenuItemPatch,
+    MENU_CATEGORIES,
+    normalizeMenuIconKey,
+} from "@/app/types/menu";
 import { Quote, QuoteInput, QuotePatch, QuoteLineItem } from "@/app/types/quote";
 import { Role, User, UserPublic } from "@/lib/users-types";
 import { itemIdFromName } from "@/lib/menu-catalog";
@@ -348,9 +354,13 @@ interface MenuItemRow {
     active: boolean;
     needs_costing: boolean;
     notes: string;
+    icon_key?: string | null;
     created_at: Date;
     updated_at: Date;
 }
+
+const MENU_ITEM_COLS =
+    "id, name, category, price_per_person, active, needs_costing, notes, icon_key, created_at, updated_at";
 
 function rowToMenuItem(r: MenuItemRow): MenuItem {
     return {
@@ -361,6 +371,7 @@ function rowToMenuItem(r: MenuItemRow): MenuItem {
         active: r.active,
         needsCosting: r.needs_costing,
         notes: r.notes ?? "",
+        iconKey: normalizeMenuIconKey(r.icon_key),
     };
 }
 
@@ -375,7 +386,7 @@ const pgMenuItemStore: MenuItemStore = {
         if (opts?.needsCosting !== undefined) { conditions.push(`needs_costing = $${i++}`); params.push(opts.needsCosting); }
         const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
         const { rows } = await getPool().query<MenuItemRow>(
-            `SELECT id, name, category, price_per_person, active, needs_costing, notes, created_at, updated_at
+            `SELECT ${MENU_ITEM_COLS}
              FROM menu_items ${where}
              ORDER BY category ASC, name ASC`,
             params,
@@ -385,7 +396,7 @@ const pgMenuItemStore: MenuItemStore = {
     async get(id) {
         await ensureSchema();
         const { rows } = await getPool().query<MenuItemRow>(
-            `SELECT id, name, category, price_per_person, active, needs_costing, notes, created_at, updated_at
+            `SELECT ${MENU_ITEM_COLS}
              FROM menu_items WHERE id = $1`,
             [id],
         );
@@ -399,10 +410,19 @@ const pgMenuItemStore: MenuItemStore = {
         if (!MENU_CATEGORIES.includes(category as never)) throw new Error("Invalid category");
         const id = itemIdFromName(category, name);
         const { rows } = await getPool().query<MenuItemRow>(
-            `INSERT INTO menu_items (id, name, category, price_per_person, active, needs_costing, notes)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
-             RETURNING id, name, category, price_per_person, active, needs_costing, notes, created_at, updated_at`,
-            [id, name, category, input.pricePerPerson ?? 0, input.active ?? true, input.needsCosting ?? false, input.notes?.trim() ?? ""],
+            `INSERT INTO menu_items (id, name, category, price_per_person, active, needs_costing, notes, icon_key)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             RETURNING ${MENU_ITEM_COLS}`,
+            [
+                id,
+                name,
+                category,
+                input.pricePerPerson ?? 0,
+                input.active ?? true,
+                input.needsCosting ?? false,
+                input.notes?.trim() ?? "",
+                normalizeMenuIconKey(input.iconKey),
+            ],
         );
         return rowToMenuItem(rows[0]);
     },
@@ -417,12 +437,16 @@ const pgMenuItemStore: MenuItemStore = {
         if (patch.active !== undefined) { sets.push(`active = $${i++}`); params.push(patch.active); }
         if (patch.needsCosting !== undefined) { sets.push(`needs_costing = $${i++}`); params.push(patch.needsCosting); }
         if (patch.notes !== undefined) { sets.push(`notes = $${i++}`); params.push(patch.notes.trim()); }
+        if (patch.iconKey !== undefined) {
+            sets.push(`icon_key = $${i++}`);
+            params.push(normalizeMenuIconKey(patch.iconKey));
+        }
         if (sets.length === 0) return pgMenuItemStore.get(id);
         sets.push(`updated_at = now()`);
         params.push(id);
         const { rows } = await getPool().query<MenuItemRow>(
             `UPDATE menu_items SET ${sets.join(", ")} WHERE id = $${i}
-             RETURNING id, name, category, price_per_person, active, needs_costing, notes, created_at, updated_at`,
+             RETURNING ${MENU_ITEM_COLS}`,
             params,
         );
         return rows.length ? rowToMenuItem(rows[0]) : null;
@@ -442,10 +466,19 @@ const pgMenuItemStore: MenuItemStore = {
             if (!name) continue;
             const id = itemIdFromName(item.category, name);
             const { rowCount } = await p.query(
-                `INSERT INTO menu_items (id, name, category, price_per_person, active, needs_costing, notes)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `INSERT INTO menu_items (id, name, category, price_per_person, active, needs_costing, notes, icon_key)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                  ON CONFLICT (category, name) DO NOTHING`,
-                [id, name, item.category, item.pricePerPerson ?? 0, item.active ?? true, item.needsCosting ?? false, item.notes?.trim() ?? ""],
+                [
+                    id,
+                    name,
+                    item.category,
+                    item.pricePerPerson ?? 0,
+                    item.active ?? true,
+                    item.needsCosting ?? false,
+                    item.notes?.trim() ?? "",
+                    normalizeMenuIconKey(item.iconKey),
+                ],
             );
             inserted += rowCount ?? 0;
         }

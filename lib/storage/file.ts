@@ -3,7 +3,13 @@ import path from "path";
 import crypto from "crypto";
 import { Package, PackageInput } from "@/app/types/package";
 import { User, UserPublic } from "@/lib/users-types";
-import { MenuItem, MenuItemInput, MenuItemPatch, MENU_CATEGORIES } from "@/app/types/menu";
+import {
+    MenuItem,
+    MenuItemInput,
+    MenuItemPatch,
+    MENU_CATEGORIES,
+    normalizeMenuIconKey,
+} from "@/app/types/menu";
 import { Quote, QuoteInput, QuotePatch, QuoteLineItem } from "@/app/types/quote";
 import { itemIdFromName } from "@/lib/menu-catalog";
 import { estimatedQuoteTotal } from "@/lib/menu-catalog";
@@ -44,6 +50,12 @@ function slugify(text: string): string {
         .replace(/[^\w\s-]/g, "")
         .replace(/[\s_-]+/g, "-")
         .replace(/^-+|-+$/g, "");
+}
+
+/** Older menu-items.json files have no iconKey; treat those as "auto". */
+function withIconKey(item: MenuItem): MenuItem {
+    const iconKey = normalizeMenuIconKey(item.iconKey);
+    return iconKey === item.iconKey ? item : { ...item, iconKey };
 }
 
 function normalizePkg(input: PackageInput): PackageInput {
@@ -191,11 +203,14 @@ const fileMenuItemStore: MenuItemStore = {
         if (opts?.needsCosting !== undefined) {
             filtered = filtered.filter((m) => m.needsCosting === opts.needsCosting);
         }
-        return filtered.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+        return filtered
+            .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
+            .map(withIconKey);
     },
     async get(id) {
         const all = await readJson<MenuItem[]>(MENU_ITEMS_FILE, []);
-        return all.find((m) => m.id === id) ?? null;
+        const item = all.find((m) => m.id === id);
+        return item ? withIconKey(item) : null;
     },
     async create(input) {
         const all = await readJson<MenuItem[]>(MENU_ITEMS_FILE, []);
@@ -215,6 +230,7 @@ const fileMenuItemStore: MenuItemStore = {
             active: input.active ?? true,
             needsCosting: input.needsCosting ?? false,
             notes: input.notes?.trim() ?? "",
+            iconKey: normalizeMenuIconKey(input.iconKey),
         };
         all.push(item);
         await writeJson(MENU_ITEMS_FILE, all);
@@ -234,7 +250,10 @@ const fileMenuItemStore: MenuItemStore = {
         if (patch.active !== undefined) target.active = patch.active;
         if (patch.needsCosting !== undefined) target.needsCosting = patch.needsCosting;
         if (patch.notes !== undefined) target.notes = patch.notes.trim();
-        all[idx] = target;
+        if (patch.iconKey !== undefined) {
+            target.iconKey = normalizeMenuIconKey(patch.iconKey);
+        }
+        all[idx] = withIconKey(target);
         await writeJson(MENU_ITEMS_FILE, all);
         return target;
     },
@@ -262,6 +281,7 @@ const fileMenuItemStore: MenuItemStore = {
                 active: item.active ?? true,
                 needsCosting: item.needsCosting ?? false,
                 notes: item.notes?.trim() ?? "",
+                iconKey: normalizeMenuIconKey(item.iconKey),
             };
             all.push(menuItem);
             inserted++;
