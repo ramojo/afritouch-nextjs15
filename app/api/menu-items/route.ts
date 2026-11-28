@@ -7,7 +7,11 @@ import {
 } from "@/lib/menu-items";
 import { listPackages } from "@/lib/packages";
 import { catalogFromPackages } from "@/lib/menu-catalog";
-import { MenuItemInput, MENU_CATEGORIES } from "@/app/types/menu";
+import {
+    MenuItemInput,
+    MENU_CATEGORIES,
+    isMenuIconKey,
+} from "@/app/types/menu";
 import { getSession } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
@@ -60,6 +64,9 @@ export async function POST(req: NextRequest) {
     }
     if (!body.category || !MENU_CATEGORIES.includes(body.category as never)) {
         return NextResponse.json({ error: "Valid category is required" }, { status: 400 });
+    }
+    if (body.iconKey !== undefined && !isMenuIconKey(body.iconKey)) {
+        return NextResponse.json({ error: "Invalid icon choice" }, { status: 400 });
     }
     if (
         body.pricePerPerson !== undefined &&

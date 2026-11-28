@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMenuItem, updateMenuItem, deleteMenuItem } from "@/lib/menu-items";
-import { MenuItemPatch, MENU_CATEGORIES, MenuCategory } from "@/app/types/menu";
+import {
+    MenuItemPatch,
+    MENU_CATEGORIES,
+    MenuCategory,
+    isMenuIconKey,
+} from "@/app/types/menu";
 import { getSession } from "@/lib/auth";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -28,6 +33,9 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         !MENU_CATEGORIES.includes(body.category as MenuCategory)
     ) {
         return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+    }
+    if (body.iconKey !== undefined && !isMenuIconKey(body.iconKey)) {
+        return NextResponse.json({ error: "Invalid icon choice" }, { status: 400 });
     }
     if (
         body.pricePerPerson !== undefined &&

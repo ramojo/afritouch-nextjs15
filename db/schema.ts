@@ -109,6 +109,7 @@ export const menuItems = pgTable(
         active: boolean("active").notNull().default(true),
         needsCosting: boolean("needs_costing").notNull().default(false),
         notes: text("notes").notNull().default(""),
+        iconKey: text("icon_key").notNull().default("auto"),
         createdAt: timestamp("created_at", { withTimezone: true })
             .notNull()
             .defaultNow(),

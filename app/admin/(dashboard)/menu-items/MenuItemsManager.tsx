@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import {
     CATEGORY_LABELS,
     MENU_CATEGORIES,
+    MENU_ICON_KEYS,
+    MENU_ICON_LABELS,
     MenuCategory,
+    MenuIconKey,
     MenuItem,
+    normalizeMenuIconKey,
 } from "@/app/types/menu";
+import { MenuIcon } from "@/lib/menu-icons";
 import { formatKes } from "@/lib/utils";
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
@@ -24,6 +29,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
         category: "starch" as MenuCategory,
         pricePerPerson: "0",
         notes: "",
+        iconKey: "auto" as MenuIconKey,
     });
 
     function draft(id: string): MenuItem {
@@ -55,6 +61,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                     active: d.active,
                     needsCosting: d.needsCosting,
                     notes: d.notes,
+                    iconKey: normalizeMenuIconKey(d.iconKey),
                 }),
             });
             const data = await res.json().catch(() => ({}));
@@ -110,6 +117,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                     category: newItem.category,
                     pricePerPerson: Number(newItem.pricePerPerson) || 0,
                     notes: newItem.notes,
+                    iconKey: normalizeMenuIconKey(newItem.iconKey),
                 }),
             });
             const data = await res.json().catch(() => ({}));
@@ -119,7 +127,13 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                     a.category.localeCompare(b.category) || a.name.localeCompare(b.name),
                 ),
             );
-            setNewItem({ name: "", category: "starch", pricePerPerson: "0", notes: "" });
+            setNewItem({
+                name: "",
+                category: "starch",
+                pricePerPerson: "0",
+                notes: "",
+                iconKey: "auto",
+            });
             setShowAdd(false);
             setNotice({ kind: "ok", text: `Added ${data.name}.` });
             router.refresh();
@@ -157,6 +171,15 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
             setBusyId(null);
         }
     }
+
+    const newItemPreview: MenuItem = {
+        id: "new",
+        ...newItem,
+        pricePerPerson: Number(newItem.pricePerPerson) || 0,
+        active: true,
+        needsCosting: false,
+        iconKey: normalizeMenuIconKey(newItem.iconKey),
+    };
 
     return (
         <div className="space-y-5">
@@ -227,6 +250,31 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                         </select>
                     </div>
                     <div className="grid gap-1">
+                        <label className="text-sm font-medium" htmlFor="new-icon">Icon</label>
+                        <div className="flex items-center gap-2">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                <MenuIcon item={newItemPreview} className="h-5 w-5" />
+                            </span>
+                            <select
+                                id="new-icon"
+                                value={newItem.iconKey}
+                                onChange={(e) =>
+                                    setNewItem({
+                                        ...newItem,
+                                        iconKey: normalizeMenuIconKey(e.target.value),
+                                    })
+                                }
+                                className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
+                            >
+                                {MENU_ICON_KEYS.map((key) => (
+                                    <option key={key} value={key}>
+                                        {MENU_ICON_LABELS[key]}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="grid gap-1">
                         <label className="text-sm font-medium" htmlFor="new-price">
                             Cost per person (KES)
                         </label>
@@ -270,11 +318,12 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                 </div>
             ) : (
                 <div className="overflow-x-auto rounded-lg border bg-card">
-                    <table className="w-full min-w-[760px] text-sm">
+                    <table className="w-full min-w-[900px] text-sm">
                         <thead className="bg-muted/50 text-left">
                             <tr>
                                 <th className="px-4 py-3 font-medium">Dish</th>
                                 <th className="px-4 py-3 font-medium">Category</th>
+                                <th className="px-4 py-3 font-medium">Icon</th>
                                 <th className="px-4 py-3 font-medium">Cost / person</th>
                                 <th className="px-4 py-3 font-medium">Available</th>
                                 <th className="px-4 py-3 font-medium">Needs costing</th>
@@ -310,6 +359,29 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                     <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
                                                 ))}
                                             </select>
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                                                    <MenuIcon item={d} className="h-4 w-4" />
+                                                </span>
+                                                <select
+                                                    value={normalizeMenuIconKey(d.iconKey)}
+                                                    onChange={(e) =>
+                                                        change(item.id, {
+                                                            iconKey: normalizeMenuIconKey(e.target.value),
+                                                        })
+                                                    }
+                                                    className="min-w-[140px] rounded-md border bg-background px-2 py-1.5 text-sm"
+                                                    aria-label={`Icon for ${item.name}`}
+                                                >
+                                                    {MENU_ICON_KEYS.map((key) => (
+                                                        <option key={key} value={key}>
+                                                            {MENU_ICON_LABELS[key]}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </td>
                                         <td className="px-4 py-2">
                                             <input
