@@ -5,14 +5,12 @@ import { useRouter } from "next/navigation";
 import {
     CATEGORY_LABELS,
     MENU_CATEGORIES,
-    MENU_ICON_KEYS,
-    MENU_ICON_LABELS,
     MenuCategory,
     MenuIconKey,
     MenuItem,
     normalizeMenuIconKey,
 } from "@/app/types/menu";
-import { MenuIcon } from "@/lib/menu-icons";
+import MenuIconPicker from "./MenuIconPicker";
 import { formatKes } from "@/lib/utils";
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
@@ -250,29 +248,18 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                         </select>
                     </div>
                     <div className="grid gap-1">
-                        <label className="text-sm font-medium" htmlFor="new-icon">Icon</label>
-                        <div className="flex items-center gap-2">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                                <MenuIcon item={newItemPreview} className="h-5 w-5" />
-                            </span>
-                            <select
-                                id="new-icon"
-                                value={newItem.iconKey}
-                                onChange={(e) =>
-                                    setNewItem({
-                                        ...newItem,
-                                        iconKey: normalizeMenuIconKey(e.target.value),
-                                    })
-                                }
-                                className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
-                            >
-                                {MENU_ICON_KEYS.map((key) => (
-                                    <option key={key} value={key}>
-                                        {MENU_ICON_LABELS[key]}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <span className="text-sm font-medium">Icon</span>
+                        <MenuIconPicker
+                            item={newItemPreview}
+                            value={newItem.iconKey}
+                            onChange={(iconKey) =>
+                                setNewItem({
+                                    ...newItem,
+                                    iconKey: normalizeMenuIconKey(iconKey),
+                                })
+                            }
+                            ariaLabel="Choose dish icon"
+                        />
                     </div>
                     <div className="grid gap-1">
                         <label className="text-sm font-medium" htmlFor="new-price">
@@ -318,16 +305,16 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                 </div>
             ) : (
                 <div className="overflow-x-auto rounded-lg border bg-card">
-                    <table className="w-full min-w-[1280px] table-fixed text-sm">
+                    <table className="w-full min-w-[1040px] table-fixed text-sm">
                         <colgroup>
-                            <col className="w-[23%]" />
+                            <col className="w-[28%]" />
                             <col className="w-[9%]" />
-                            <col className="w-[18%]" />
+                            <col className="w-[6%]" />
                             <col className="w-[8%]" />
                             <col className="w-[7%]" />
                             <col className="w-[9%]" />
-                            <col className="w-[12%]" />
-                            <col className="w-[14%]" />
+                            <col className="w-[16%]" />
+                            <col className="w-[17%]" />
                         </colgroup>
                         <thead className="bg-muted/50 text-left">
                             <tr>
@@ -371,27 +358,17 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                             </select>
                                         </td>
                                         <td className="px-4 py-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                                                    <MenuIcon item={d} className="h-4 w-4" />
-                                                </span>
-                                                <select
-                                                    value={normalizeMenuIconKey(d.iconKey)}
-                                                    onChange={(e) =>
-                                                        change(item.id, {
-                                                            iconKey: normalizeMenuIconKey(e.target.value),
-                                                        })
-                                                    }
-                                                    className="min-w-[140px] rounded-md border bg-background px-2 py-1.5 text-sm"
-                                                    aria-label={`Icon for ${item.name}`}
-                                                >
-                                                    {MENU_ICON_KEYS.map((key) => (
-                                                        <option key={key} value={key}>
-                                                            {MENU_ICON_LABELS[key]}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
+                                            <MenuIconPicker
+                                                item={d}
+                                                value={d.iconKey}
+                                                onChange={(iconKey) =>
+                                                    change(item.id, {
+                                                        iconKey: normalizeMenuIconKey(iconKey),
+                                                    })
+                                                }
+                                                ariaLabel={`Icon for ${item.name}`}
+                                                compact
+                                            />
                                         </td>
                                         <td className="px-4 py-2">
                                             <input
@@ -438,12 +415,12 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                             />
                                         </td>
                                         <td className="px-4 py-2">
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end gap-1 whitespace-nowrap">
                                                 <button
                                                     type="button"
                                                     onClick={() => save(item.id)}
                                                     disabled={!isDirty(item.id) || busyId === item.id}
-                                                    className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+                                                    className="rounded-md bg-primary px-2 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
                                                 >
                                                     Save
                                                 </button>
@@ -457,7 +434,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                         })
                                                     }
                                                     disabled={!isDirty(item.id)}
-                                                    className="rounded-md border px-2 py-1.5 text-xs hover:bg-muted disabled:opacity-40"
+                                                    className="rounded-md border px-1.5 py-1.5 text-xs hover:bg-muted disabled:opacity-40"
                                                 >
                                                     Undo
                                                 </button>
@@ -465,7 +442,7 @@ export default function MenuItemsManager({ initialItems }: { initialItems: MenuI
                                                     type="button"
                                                     onClick={() => remove(item.id)}
                                                     disabled={busyId === item.id}
-                                                    className="rounded-md border px-2 py-1.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+                                                    className="rounded-md border px-1.5 py-1.5 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
                                                 >
                                                     Delete
                                                 </button>
