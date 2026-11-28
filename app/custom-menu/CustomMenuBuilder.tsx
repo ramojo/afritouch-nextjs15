@@ -5,13 +5,16 @@ import {
     DndContext,
     DragOverlay,
     KeyboardSensor,
+    MeasuringStrategy,
     PointerSensor,
     TouchSensor,
     closestCenter,
+    pointerWithin,
     useDraggable,
     useDroppable,
     useSensor,
     useSensors,
+    type CollisionDetection,
     type DragEndEvent,
     type DragStartEvent,
 } from "@dnd-kit/core";
@@ -24,18 +27,23 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-    Check,
-    ChefHat,
-    Coffee,
-    GripVertical,
-    Info,
-    Leaf,
-    Plus,
-    Trash2,
-    Utensils,
-    Wine,
-    X,
-} from "lucide-react";
+    Apple,
+    Bbq,
+    BirthdayCake,
+    BreadSlice,
+    Chocolate,
+    CoffeeCup,
+    Cutlery,
+    Droplet,
+    DropletCheck,
+    Egg,
+    Fish,
+    IceCream,
+    OrangeSlice,
+    Potion,
+    Vegan,
+} from "iconoir-react";
+import { Check, GripVertical, Info, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import {
     CATEGORY_LABELS,
@@ -50,15 +58,108 @@ import {
     displayCost,
     isPriced,
 } from "@/lib/custom-menu";
-import { formatKes } from "@/lib/utils";
+import { formatKes, normalizeItemName } from "@/lib/utils";
 
-const CATEGORY_ICONS: Record<MenuCategory, React.ReactNode> = {
-    starch: <ChefHat className="h-4 w-4" />,
-    protein: <Utensils className="h-4 w-4" />,
-    vegetables: <Leaf className="h-4 w-4" />,
-    dessert: <Coffee className="h-4 w-4" />,
-    drinks: <Wine className="h-4 w-4" />,
+type IconoirIcon = typeof BreadSlice;
+
+// Iconoir has no rice/pot icon. Pilau is a spiced one-pot rice dish, so rice
+// and other plated starches use Cutlery (a meal), never Glass*/wineware.
+const CATEGORY_ICONS: Record<MenuCategory, IconoirIcon> = {
+    starch: Cutlery,
+    protein: Bbq,
+    vegetables: Vegan,
+    dessert: BirthdayCake,
+    drinks: Droplet,
 };
+
+// Exact dish names imported from packages.json. Keyword rules below are only a
+// fallback for dishes added manually by an admin.
+const MENU_ICON_BY_NAME: Record<string, IconoirIcon> = {
+    pilau: Cutlery,
+    "swahili pilau": Cutlery,
+    "vegetable rice": Cutlery,
+    "rice garnished with vegetables": Cutlery,
+    "swahili rice": Cutlery,
+    "vegetable stir-fried rice": Cutlery,
+    "chinese stir-fried rice": Cutlery,
+    chapati: BreadSlice,
+    "white and brown chapati": BreadSlice,
+    "soft layered chapati": BreadSlice,
+    "a choice of mukimo, mashed potatoes or parsley potatoes": Cutlery,
+    "mukimo or parsley potatoes": Cutlery,
+    "roast potatoes/wedges": Cutlery,
+    "extra starch option": Cutlery,
+    "beef stew": Bbq,
+    "beef wet fry/stew": Bbq,
+    chicken: Bbq,
+    "glazed chicken": Bbq,
+    "goat fry, pork or fish": Bbq,
+    "mbuzi wet fry": Bbq,
+    "pan seared fish fillet": Fish,
+    "vegetable salad or cooked vegetables": Vegan,
+    "stir fried vegetables": Vegan,
+    "vegetarian option": Vegan,
+    "assortment of stir fried vegetables": Vegan,
+    "creamed spinach": Vegan,
+    "traditional vegetables": Vegan,
+    "fruit in season": Apple,
+    "fruit cuts": OrangeSlice,
+    "fruit cuts or ice cream": IceCream,
+    "assorted fruit platter": OrangeSlice,
+    "ice cream": IceCream,
+    "cake slices": BirthdayCake,
+    soda: Potion,
+    water: Droplet,
+    "mineral water": DropletCheck,
+    "fresh juice": OrangeSlice,
+    "tea/coffee": CoffeeCup,
+};
+
+const MENU_ICON_RULES: Array<{ test: RegExp; icon: IconoirIcon }> = [
+    { test: /ice\s*cream|gelato/i, icon: IceCream },
+    { test: /cake|cookie|biscuit/i, icon: BirthdayCake },
+    { test: /chocolate/i, icon: Chocolate },
+    { test: /fruit platter|fruit cuts|orange|citrus/i, icon: OrangeSlice },
+    { test: /fruit/i, icon: Apple },
+    { test: /tea|coffee/i, icon: CoffeeCup },
+    { test: /juice/i, icon: OrangeSlice },
+    { test: /mineral water/i, icon: DropletCheck },
+    { test: /water/i, icon: Droplet },
+    { test: /soda|fizzy|carbonated/i, icon: Potion },
+    { test: /fish/i, icon: Fish },
+    { test: /egg/i, icon: Egg },
+    { test: /beef|goat|pork|mbuzi|chicken|stew|fry|roast|meat/i, icon: Bbq },
+    { test: /chapati|flatbread|bread|naan/i, icon: BreadSlice },
+    { test: /rice|pilau|starch|potato|mukimo|wedge/i, icon: Cutlery },
+    { test: /salad|vegetarian|vegetable|spinach|greens/i, icon: Vegan },
+];
+
+function menuIconFor(item: MenuItem): IconoirIcon {
+    return (
+        MENU_ICON_BY_NAME[normalizeItemName(item.name)] ??
+        MENU_ICON_RULES.find((rule) => rule.test.test(item.name))?.icon ??
+        CATEGORY_ICONS[item.category]
+    );
+}
+
+function MenuIcon({ item, className }: { item: MenuItem; className?: string }) {
+    const Icon = menuIconFor(item);
+    return (
+        <Icon
+            className={className}
+            width="1em"
+            height="1em"
+            strokeWidth={1.6}
+            aria-hidden="true"
+        />
+    );
+}
+
+// Only the "Your menu" sidebar is a droppable. Using pointerWithin prevents a
+// large surrounding catalogue from winning collision detection, while
+// closestCenter keeps keyboard dragging usable.
+const collisionDetection: CollisionDetection = (args) =>
+    args.pointerCoordinates ? pointerWithin(args) : closestCenter(args);
 
 function CatalogCard({
     item,
@@ -69,17 +170,15 @@ function CatalogCard({
     selected: boolean;
     onAdd: () => void;
 }) {
-    const { attributes, listeners, setNodeRef, transform, isDragging } =
-        useDraggable({
-            id: `catalog-${item.id}`,
-            data: { source: "catalog", item },
-            disabled: selected,
-        });
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+        id: `catalog-${item.id}`,
+        data: { source: "catalog", item },
+        disabled: selected,
+    });
 
     return (
         <div
             ref={setNodeRef}
-            style={{ transform: CSS.Translate.toString(transform) }}
             className={`group flex items-center justify-between gap-2 rounded-lg border bg-card px-3 py-2 text-sm shadow-sm transition-colors ${
                 selected
                     ? "border-secondary/60 bg-secondary/10 opacity-70"
@@ -88,13 +187,18 @@ function CatalogCard({
             {...(selected ? {} : listeners)}
             {...(selected ? {} : attributes)}
         >
-            <div className="min-w-0">
-                <p className="truncate font-medium text-foreground">{item.name}</p>
-                <p className="text-xs text-muted-foreground">
-                    {isPriced(item)
-                        ? `${formatKes(item.pricePerPerson)} / person`
-                        : "Awaiting costing"}
-                </p>
+            <div className="flex min-w-0 items-center gap-2">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <MenuIcon item={item} className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                    <p className="truncate font-medium text-foreground">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {isPriced(item)
+                            ? `${formatKes(item.pricePerPerson)} / person`
+                            : "Awaiting costing"}
+                    </p>
+                </div>
             </div>
             {selected ? (
                 <Check className="h-4 w-4 shrink-0 text-secondary" aria-label="Already added" />
@@ -137,7 +241,11 @@ function SelectedCard({
         <div
             ref={setNodeRef}
             style={{
-                transform: CSS.Transform.toString(transform),
+                // The DragOverlay handles the active item's movement; only
+                // shuffle the other cards while reordering.
+                transform: isDragging
+                    ? undefined
+                    : CSS.Transform.toString(transform),
                 transition,
             }}
             className={`flex items-center gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm ${
@@ -153,6 +261,9 @@ function SelectedCard({
             >
                 <GripVertical className="h-4 w-4" />
             </button>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <MenuIcon item={item} className="h-4 w-4" />
+            </span>
             <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -174,6 +285,25 @@ function SelectedCard({
     );
 }
 
+function SelectionDropZone({ children }: { children: React.ReactNode }) {
+    // This hook must live inside DndContext. Calling it in CustomMenuBuilder
+    // (which only renders DndContext) leaves the droppable unregistered.
+    const { setNodeRef, isOver } = useDroppable({ id: "selection" });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className={`rounded-xl border-2 border-dashed p-4 transition-colors ${
+                isOver
+                    ? "border-secondary bg-secondary/10"
+                    : "border-border bg-card/60"
+            }`}
+        >
+            {children}
+        </div>
+    );
+}
+
 export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
     const [selected, setSelected] = useState<MenuItem[]>([]);
     const [guestCount, setGuestCount] = useState(50);
@@ -189,12 +319,6 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
             coordinateGetter: sortableKeyboardCoordinates,
         }),
     );
-
-    const { setNodeRef: setCatalogRef, isOver: isCatalogOver } = useDroppable({
-        id: "catalog",
-    });
-    const { setNodeRef: setSelectionRef, isOver: isSelectionOver } =
-        useDroppable({ id: "selection" });
 
     const cost = customMenuCost(guestCount, selected);
     const lineItems: QuoteLineItem[] = selected.map((item) => ({
@@ -216,20 +340,34 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
     }
 
     function handleDragStart(event: DragStartEvent) {
-        setActiveItem((event.active.data.current?.item as MenuItem) ?? null);
+        const activeId = String(event.active.id);
+        setActiveItem(
+            (event.active.data.current?.item as MenuItem | undefined) ??
+                items.find((item) => `catalog-${item.id}` === activeId) ??
+                selected.find((item) => `selected-${item.id}` === activeId) ??
+                null,
+        );
     }
 
     function handleDragEnd(event: DragEndEvent) {
         setActiveItem(null);
         const { active, over } = event;
-        if (!over) return;
 
-        const source = active.data.current?.source;
-        const itemId = String(active.id).replace(/^(catalog|selected)-/, "");
-        const overId = String(over.id);
+        const activeId = String(active.id);
+        // Infer from the id as a fallback in case custom data is unavailable.
+        const source =
+            active.data.current?.source ??
+            (activeId.startsWith("selected-") ? "selection" : "catalog");
+        const itemId = activeId.replace(/^(catalog|selected)-/, "");
+        const overId = over ? String(over.id) : null;
 
         if (source === "catalog") {
-            if (overId !== "catalog" && overId !== "selection" && !overId.startsWith("selected-")) {
+            // Only the sidebar can accept catalogue drags. Dropping back on the
+            // catalogue (or nowhere) is a no-op.
+            if (
+                !overId ||
+                (overId !== "selection" && !overId.startsWith("selected-"))
+            ) {
                 return;
             }
             const item = items.find((i) => i.id === itemId);
@@ -242,11 +380,13 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
         }
 
         if (source === "selection") {
-            if (overId === "catalog" || overId.startsWith("catalog-")) {
+            // Dragging a selected dish outside the sidebar removes it.
+            if (!overId) {
                 setSelected((prev) => prev.filter((s) => s.id !== itemId));
                 return;
             }
-            if (overId.startsWith("selected-") && overId !== active.id) {
+            if (overId === "selection" || overId === active.id) return;
+            if (overId.startsWith("selected-")) {
                 const targetId = overId.slice("selected-".length);
                 setSelected((prev) => {
                     const from = prev.findIndex((s) => s.id === itemId);
@@ -264,8 +404,10 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
 
     return (
         <DndContext
+            id="custom-menu-dnd"
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
+            measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
             onDragStart={handleDragStart}
             onDragCancel={() => setActiveItem(null)}
             onDragEnd={handleDragEnd}
@@ -287,46 +429,37 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
                             No dishes are available yet. Please check back soon.
                         </div>
                     ) : (
-                        <div
-                            ref={setCatalogRef}
-                            className={`space-y-5 rounded-xl p-1 transition-colors ${
-                                isCatalogOver ? "bg-secondary/10" : ""
-                            }`}
-                        >
-                            {grouped.map(({ category, items: groupItems }) => (
-                                <div key={category} className="space-y-2">
-                                    <h3 className="flex items-center gap-2 font-serif text-base font-semibold text-primary">
-                                        {CATEGORY_ICONS[category]}
-                                        {CATEGORY_LABELS[category]}
-                                    </h3>
-                                    <div className="grid gap-2 sm:grid-cols-2">
-                                        {groupItems.map((item) => (
-                                            <CatalogCard
-                                                key={item.id}
-                                                item={item}
-                                                selected={selected.some(
-                                                    (s) => s.id === item.id,
-                                                )}
-                                                onAdd={() => addItem(item)}
-                                            />
-                                        ))}
+                        <div className="space-y-5 rounded-xl p-1">
+                            {grouped.map(({ category, items: groupItems }) => {
+                                const CategoryIcon = CATEGORY_ICONS[category];
+                                return (
+                                    <div key={category} className="space-y-2">
+                                        <h3 className="flex items-center gap-2 font-serif text-base font-semibold text-primary">
+                                            <CategoryIcon className="h-4 w-4" />
+                                            {CATEGORY_LABELS[category]}
+                                        </h3>
+                                        <div className="grid gap-2 sm:grid-cols-2">
+                                            {groupItems.map((item) => (
+                                                <CatalogCard
+                                                    key={item.id}
+                                                    item={item}
+                                                    selected={selected.some(
+                                                        (s) => s.id === item.id,
+                                                    )}
+                                                    onAdd={() => addItem(item)}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </section>
 
                 {/* Selected menu + summary */}
                 <aside className="space-y-4 lg:sticky lg:top-24">
-                    <div
-                        ref={setSelectionRef}
-                        className={`rounded-xl border-2 border-dashed p-4 transition-colors ${
-                            isSelectionOver
-                                ? "border-secondary bg-secondary/10"
-                                : "border-border bg-card/60"
-                        }`}
-                    >
+                    <SelectionDropZone>
                         <div className="mb-3 flex items-center justify-between">
                             <h2 className="font-serif text-xl font-semibold text-primary">
                                 Your menu
@@ -365,7 +498,7 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
                                 </div>
                             </SortableContext>
                         )}
-                    </div>
+                    </SelectionDropZone>
 
                     <div className="rounded-xl border bg-card p-4 shadow-sm">
                         <div className="grid gap-2">
@@ -453,6 +586,9 @@ export default function CustomMenuBuilder({ items }: { items: MenuItem[] }) {
                 {activeItem ? (
                     <div className="flex items-center gap-2 rounded-lg border border-primary bg-card px-3 py-2 text-sm font-medium shadow-xl">
                         <GripVertical className="h-4 w-4 text-muted-foreground" />
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                            <MenuIcon item={activeItem} className="h-4 w-4" />
+                        </span>
                         {activeItem.name}
                     </div>
                 ) : null}

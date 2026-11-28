@@ -54,6 +54,9 @@ importers:
       dotenv:
         specifier: ^18.0.10
         version: 18.0.10
+      iconoir-react:
+        specifier: ^7.12.2
+        version: 7.12.2(react@19.3.1)
       lucide-react:
         specifier: ^1.81.0
         version: 1.81.0(@types/react@19.3.3)(react@19.3.1)
@@ -2338,6 +2341,11 @@ packages:
 
   hookified@2.2.0:
     resolution: {integrity: sha512-p/LgFzRN5FeoD3DLS6bkUapeye6E4SI6yJs6KetENd18S+FBthqYq2amJUWpt5z0EQwwHemidjY5OqJGEKm5uA==}
+
+  iconoir-react@7.12.2:
+    resolution: {integrity: sha512-BDOIt6qcGY4pgJ+5et2ZjuWEbVKwnpRyTLq7viN3bF+BzpxVWCNDBkMd8iVeHx+QglqciiS8ftgU5Ddvz0Rn6A==}
+    peerDependencies:
+      react: 18 || 19
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -5252,6 +5260,10 @@ snapshots:
   hookified@1.15.1: {}
 
   hookified@2.2.0: {}
+
+  iconoir-react@7.12.2(react@19.3.1):
+    dependencies:
+      react: 19.3.1
 
   ignore@5.3.2: {}
 
