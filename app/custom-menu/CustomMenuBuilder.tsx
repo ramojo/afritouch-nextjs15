@@ -27,22 +27,29 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-    Apple,
-    Bbq,
-    BirthdayCake,
-    BreadSlice,
-    Chocolate,
-    CoffeeCup,
-    Cutlery,
-    Droplet,
-    DropletCheck,
-    Egg,
-    Fish,
-    IceCream,
-    OrangeSlice,
-    Potion,
-    Vegan,
-} from "iconoir-react";
+    IconApple,
+    IconBottle,
+    IconBowl,
+    IconBowlChopsticks,
+    IconBread,
+    IconBubbleTea,
+    IconCake,
+    IconCherry,
+    IconChocolate,
+    IconCoffee,
+    IconCup,
+    IconDroplets,
+    IconEggFried,
+    IconFish,
+    IconGrape,
+    IconGrillFork,
+    IconIceCream,
+    IconLeaf,
+    IconMeat,
+    IconSalad,
+    IconSoup,
+    type TablerIcon,
+} from "@tabler/icons-react";
 import { Check, GripVertical, Info, Plus, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import {
@@ -60,81 +67,85 @@ import {
 } from "@/lib/custom-menu";
 import { formatKes, normalizeItemName } from "@/lib/utils";
 
-type IconoirIcon = typeof BreadSlice;
+type MenuIconComponent = TablerIcon;
 
-// Iconoir has no rice/pot icon. Pilau is a spiced one-pot rice dish, so rice
-// and other plated starches use Cutlery (a meal), never Glass*/wineware.
-const CATEGORY_ICONS: Record<MenuCategory, IconoirIcon> = {
-    starch: Cutlery,
-    protein: Bbq,
-    vegetables: Vegan,
-    dessert: BirthdayCake,
-    drinks: Droplet,
+// Tabler has dedicated food icons. Rice/Pilau dishes use bowls, never the
+// glass or wine-glass icons, so the icon matches the actual dish.
+const CATEGORY_ICONS: Record<MenuCategory, MenuIconComponent> = {
+    starch: IconBowl,
+    protein: IconMeat,
+    vegetables: IconSalad,
+    dessert: IconCake,
+    drinks: IconBottle,
 };
 
 // Exact dish names imported from packages.json. Keyword rules below are only a
 // fallback for dishes added manually by an admin.
-const MENU_ICON_BY_NAME: Record<string, IconoirIcon> = {
-    pilau: Cutlery,
-    "swahili pilau": Cutlery,
-    "vegetable rice": Cutlery,
-    "rice garnished with vegetables": Cutlery,
-    "swahili rice": Cutlery,
-    "vegetable stir-fried rice": Cutlery,
-    "chinese stir-fried rice": Cutlery,
-    chapati: BreadSlice,
-    "white and brown chapati": BreadSlice,
-    "soft layered chapati": BreadSlice,
-    "a choice of mukimo, mashed potatoes or parsley potatoes": Cutlery,
-    "mukimo or parsley potatoes": Cutlery,
-    "roast potatoes/wedges": Cutlery,
-    "extra starch option": Cutlery,
-    "beef stew": Bbq,
-    "beef wet fry/stew": Bbq,
-    chicken: Bbq,
-    "glazed chicken": Bbq,
-    "goat fry, pork or fish": Bbq,
-    "mbuzi wet fry": Bbq,
-    "pan seared fish fillet": Fish,
-    "vegetable salad or cooked vegetables": Vegan,
-    "stir fried vegetables": Vegan,
-    "vegetarian option": Vegan,
-    "assortment of stir fried vegetables": Vegan,
-    "creamed spinach": Vegan,
-    "traditional vegetables": Vegan,
-    "fruit in season": Apple,
-    "fruit cuts": OrangeSlice,
-    "fruit cuts or ice cream": IceCream,
-    "assorted fruit platter": OrangeSlice,
-    "ice cream": IceCream,
-    "cake slices": BirthdayCake,
-    soda: Potion,
-    water: Droplet,
-    "mineral water": DropletCheck,
-    "fresh juice": OrangeSlice,
-    "tea/coffee": CoffeeCup,
+const MENU_ICON_BY_NAME: Record<string, MenuIconComponent> = {
+    pilau: IconBowl,
+    "swahili pilau": IconBowl,
+    "vegetable rice": IconBowl,
+    "rice garnished with vegetables": IconBowl,
+    "swahili rice": IconBowl,
+    "vegetable stir-fried rice": IconBowlChopsticks,
+    "chinese stir-fried rice": IconBowlChopsticks,
+    chapati: IconBread,
+    "white and brown chapati": IconBread,
+    "soft layered chapati": IconBread,
+    "a choice of mukimo, mashed potatoes or parsley potatoes": IconBowl,
+    "mukimo or parsley potatoes": IconBowl,
+    "roast potatoes/wedges": IconBowl,
+    "extra starch option": IconBowl,
+    "extra starch options": IconBowl,
+    "beef stew": IconSoup,
+    "beef wet fry/stew": IconSoup,
+    chicken: IconMeat,
+    "glazed chicken": IconMeat,
+    "goat fry, pork or fish": IconGrillFork,
+    "mbuzi wet fry": IconMeat,
+    "pan seared fish fillet": IconFish,
+    "vegetable salad or cooked vegetables": IconSalad,
+    "stir fried vegetables": IconSalad,
+    "vegetarian option": IconSalad,
+    "assortment of stir fried vegetables": IconSalad,
+    "creamed spinach": IconLeaf,
+    "traditional vegetables": IconLeaf,
+    "fruit in season": IconApple,
+    "fruit cuts": IconCherry,
+    "fruit cuts or ice cream": IconIceCream,
+    "assorted fruit platter": IconGrape,
+    "ice cream": IconIceCream,
+    "cake slices": IconCake,
+    soda: IconCup,
+    water: IconBottle,
+    "mineral water": IconDroplets,
+    "fresh juice": IconBubbleTea,
+    "tea/coffee": IconCoffee,
 };
 
-const MENU_ICON_RULES: Array<{ test: RegExp; icon: IconoirIcon }> = [
-    { test: /ice\s*cream|gelato/i, icon: IceCream },
-    { test: /cake|cookie|biscuit/i, icon: BirthdayCake },
-    { test: /chocolate/i, icon: Chocolate },
-    { test: /fruit platter|fruit cuts|orange|citrus/i, icon: OrangeSlice },
-    { test: /fruit/i, icon: Apple },
-    { test: /tea|coffee/i, icon: CoffeeCup },
-    { test: /juice/i, icon: OrangeSlice },
-    { test: /mineral water/i, icon: DropletCheck },
-    { test: /water/i, icon: Droplet },
-    { test: /soda|fizzy|carbonated/i, icon: Potion },
-    { test: /fish/i, icon: Fish },
-    { test: /egg/i, icon: Egg },
-    { test: /beef|goat|pork|mbuzi|chicken|stew|fry|roast|meat/i, icon: Bbq },
-    { test: /chapati|flatbread|bread|naan/i, icon: BreadSlice },
-    { test: /rice|pilau|starch|potato|mukimo|wedge/i, icon: Cutlery },
-    { test: /salad|vegetarian|vegetable|spinach|greens/i, icon: Vegan },
+const MENU_ICON_RULES: Array<{ test: RegExp; icon: MenuIconComponent }> = [
+    { test: /ice\s*cream|gelato|milkshake/i, icon: IconIceCream },
+    { test: /cake|cookie|biscuit/i, icon: IconCake },
+    { test: /chocolate/i, icon: IconChocolate },
+    { test: /fruit platter|grape|berry/i, icon: IconGrape },
+    { test: /fruit cuts|citrus|orange|lemon/i, icon: IconCherry },
+    { test: /fruit/i, icon: IconApple },
+    { test: /tea|coffee/i, icon: IconCoffee },
+    { test: /juice|smoothie/i, icon: IconBubbleTea },
+    { test: /soda|fizzy|carbonated/i, icon: IconCup },
+    { test: /mineral water/i, icon: IconDroplets },
+    { test: /water/i, icon: IconBottle },
+    { test: /fish|seafood/i, icon: IconFish },
+    { test: /egg/i, icon: IconEggFried },
+    { test: /soup|stew/i, icon: IconSoup },
+    { test: /beef|goat|pork|mbuzi|chicken|fry|roast|meat/i, icon: IconMeat },
+    { test: /chapati|flatbread|bread|naan/i, icon: IconBread },
+    { test: /rice|pilau|starch|potato|mukimo|wedge/i, icon: IconBowl },
+    { test: /spinach|greens|leaf|vegetarian/i, icon: IconLeaf },
+    { test: /salad|vegetable/i, icon: IconSalad },
 ];
 
-function menuIconFor(item: MenuItem): IconoirIcon {
+function menuIconFor(item: MenuItem): MenuIconComponent {
     return (
         MENU_ICON_BY_NAME[normalizeItemName(item.name)] ??
         MENU_ICON_RULES.find((rule) => rule.test.test(item.name))?.icon ??
@@ -147,9 +158,8 @@ function MenuIcon({ item, className }: { item: MenuItem; className?: string }) {
     return (
         <Icon
             className={className}
-            width="1em"
-            height="1em"
-            strokeWidth={1.6}
+            size="1em"
+            stroke={1.6}
             aria-hidden="true"
         />
     );
